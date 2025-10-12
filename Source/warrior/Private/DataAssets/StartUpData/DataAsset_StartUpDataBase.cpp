@@ -27,13 +27,13 @@ void UDataAsset_StartUpDataBase::GrantAbilities(const TArray<TSubclassOf<UWarrio
 	{
 		if (!Ability) continue;
 
-		// 어빌리티 명세(스펙)에 넣어서 변수를 만들고
+		// 어빌리티 인스턴스(스펙)에 넣어서 변수를 만들고
 		FGameplayAbilitySpec AbilitySpec(Ability);
 		// 등록할 아바타를 어빌리티 시스템을 통해 구해오기
 		AbilitySpec.SourceObject = InASCToGive->GetAvatarActor();
 		AbilitySpec.Level = ApplyLevel;
 
-		// 어빌리티 시스템에 어빌리트를 등록하도록 함
+		// 어빌리티 시스템에 어빌리티를 등록하도록 함, 기본 제공 함수, 등록시 자동으로 어빌리티의 GiveOn 함수 실행
 		InASCToGive->GiveAbility(AbilitySpec);
 	}
 }

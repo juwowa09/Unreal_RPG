@@ -43,6 +43,7 @@ AWarriorHeroCharacter::AWarriorHeroCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = 400.f;	// 최대 걷기 속도
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;	// 이동 정지시 감속
 
+	// CombatComponent 는 확장 컴포넌트 상속 (필요한 기능들 추가)
 	HeroCombatComponent = CreateDefaultSubobject<UHeroCombatComponent>(TEXT("HeroCombatComponent"));
 }
 

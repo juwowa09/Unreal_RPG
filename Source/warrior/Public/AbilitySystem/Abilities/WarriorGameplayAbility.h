@@ -16,6 +16,8 @@ enum class EWarriorAbilityActivationPolicy : uint8
 /**
  * 
  */
+class UPawnCombatComponent;
+class UWarriorAbilitySystemComponent;
 UCLASS()
 class WARRIOR_API UWarriorGameplayAbility : public UGameplayAbility
 {
@@ -30,4 +32,10 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly,Category="WarriorAbility")
 	EWarriorAbilityActivationPolicy AbilityActivationPolicy = EWarriorAbilityActivationPolicy::OnTrigger;
+
+	UFUNCTION(BlueprintPure, Category= "Warrior|Ability")
+	UPawnCombatComponent* GetPawnCombatComponentFromActorInfo() const;
+
+	UFUNCTION(BlueprintPure, Category= "Warrior|Ability")
+	UWarriorAbilitySystemComponent* GetWarriorAbilitySystemComponentFromActorInfo() const;
 };
