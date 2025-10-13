@@ -68,7 +68,7 @@ void AWarriorHeroCharacter::PossessedBy(AController* NewController)
 	}
 }
 
-//컨트롤러 연결 후 인풋 바인딩에 호출되는 함수
+//컨트롤러 연결 후 인풋 바인딩 시점에 호출되는 함수
 void AWarriorHeroCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	checkf(InputConfigDataAsset,TEXT("Forgot to asign a vaild data asset as input config"))
