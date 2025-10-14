@@ -16,9 +16,11 @@ class WARRIOR_API UWarriorInputComponent : public UEnhancedInputComponent
 	GENERATED_BODY()
 
 public:
+	// 이동 관련 인풋 바인딩
 	template<class UserObject, typename CallbackFunc>
 	void BindNativeInputAction(const UDataAsset_InputConfig* InInputConfig, const FGameplayTag& InInputTag, ETriggerEvent TriggerEvent, UserObject* ContextObject, CallbackFunc Func);
-	
+
+	// 어빌리티 관련 인풋 바인딩 함수
 	template<class UserObject, typename CallbackFunc>
 	void BindAbilityInputAction(const UDataAsset_InputConfig* InInputConfig, UserObject* ContextObject, CallbackFunc InputPressedFunc, CallbackFunc InputRelasedFunc);
 };
