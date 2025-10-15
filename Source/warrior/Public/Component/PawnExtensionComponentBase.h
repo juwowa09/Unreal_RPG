@@ -13,6 +13,7 @@ class WARRIOR_API UPawnExtensionComponentBase : public UActorComponent
 	GENERATED_BODY()
 
 protected:
+	// Pawn Get 헬퍼함수
 	template<class T>
 	T* GetOwningPawn() const
 	{
@@ -25,6 +26,7 @@ protected:
 		return GetOwningPawn<APawn>();
 	}
 
+	// Controller 가져오는 헬퍼함수
 	template<class T>
 	T* GetOwningController() const
 	{
