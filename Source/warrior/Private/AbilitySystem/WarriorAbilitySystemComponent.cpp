@@ -2,6 +2,9 @@
 
 
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
+#include "WarriorTypes/WarriorStructTypes.h"
+
+#include "WarriorDebugHelper.h"
 
 void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& InInputTag)
 {
@@ -20,3 +23,25 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 void UWarriorAbilitySystemComponent::OnAbilityInputReleased(const FGameplayTag& InInputTag)
 {
 }
+
+void UWarriorAbilitySystemComponent::GrantHeroWeaponAbility(
+	const TArray<FWarriorHeroAbilitySet>& InDefaultWeaponAbilities, int32 ApplyLevel)
+{
+	if (InDefaultWeaponAbilities.IsEmpty()) return;
+
+	for (const FWarriorHeroAbilitySet& AbilitySet : InDefaultWeaponAbilities)
+	{
+		if (!AbilitySet.IsValid()) continue;
+		FGameplayAbilitySpec AbilitySpec(AbilitySet.AbilityToGrant);
+		AbilitySpec.SourceObject = GetAvatarActor();
+		AbilitySpec.Level = ApplyLevel;
+		AbilitySpec.GetDynamicSpecSourceTags().AddTag(AbilitySet.InputTag);
+
+		
+		Debug::Print(*GetNameSafe(AbilitySet.AbilityToGrant));
+		
+
+		GiveAbility(AbilitySpec);
+	}
+}
+
