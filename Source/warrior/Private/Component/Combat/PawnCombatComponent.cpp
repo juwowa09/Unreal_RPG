@@ -4,7 +4,6 @@
 #include "Component/Combat/PawnCombatComponent.h"
 #include "Items/Weapons/WarriorWeaponBase.h"
 
-#include "WarriorDebugHelper.h"
 
 void UPawnCombatComponent::RegisterSpawnedWeapon(FGameplayTag InWeaponTagToRegister,
 	AWarriorWeaponBase* InWeaponToRegister, bool bRegisterAsEquippedWeapon)
@@ -19,10 +18,6 @@ void UPawnCombatComponent::RegisterSpawnedWeapon(FGameplayTag InWeaponTagToRegis
 	{
 		CurrentEquippedWeaponTag = InWeaponTagToRegister;
 	}
-
-	// Printf 한다고 진짜 프린트 되는게 아니라 문자열로 만드는 것
-	const FString WeaponString = FString::Printf(TEXT("A weapon named: %s has been registered using tag %s"), *InWeaponToRegister->GetName(), *InWeaponTagToRegister.ToString()); 
-	Debug::Print(WeaponString);
 }
 
 AWarriorWeaponBase* UPawnCombatComponent::GetCharacterCarriedWeaponByTag(FGameplayTag InWeaponTagToGet) const
