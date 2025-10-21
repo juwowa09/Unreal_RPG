@@ -2,9 +2,12 @@
 
 
 #include "Characters/WarriorEnemyCharacter.h"
-
 #include "Component/Combat/EnemyCombatComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Engine/AssetManager.h"
+#include "DataAssets/StartUpData/DataAsset_EnemyStartUpData.h"
+
+#include "WarriorDebugHelper.h"
 
 AWarriorEnemyCharacter::AWarriorEnemyCharacter()
 {
@@ -23,4 +26,33 @@ AWarriorEnemyCharacter::AWarriorEnemyCharacter()
 	GetCharacterMovement()->BrakingDecelerationWalking = 1000.f;
 
 	EnemyCombatComponent = CreateDefaultSubobject<UEnemyCombatComponent>("EnemyCombatComponent");
+}
+
+void AWarriorEnemyCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	InitEnemyStartUpData();
+}
+
+void AWarriorEnemyCharacter::InitEnemyStartUpData()
+{
+	if (CharacterStartUpData.IsNull()) return;
+
+	// 비동기 요청
+	UAssetManager::GetStreamableManager().RequestAsyncLoad(
+		CharacterStartUpData.ToSoftObjectPath(),
+		// 람다함수 -> 저장안하고 사용시 일회용, [](람다캡쳐)는 외부 변수를 어떻게 사용할 것인지 정의하는 부분
+		FStreamableDelegate::CreateLambda(
+			[this]()
+			{
+				if (UDataAsset_StartUpDataBase* LoadedData = CharacterStartUpData.Get())
+				{
+					LoadedData->GiveToAbilitySystemComponent(WarriorAbilitySystemComponent);
+
+					// Debug::Print(TEXT("Enemy Start Up Data Loaded"),FColor::Green);
+				}
+			}
+		)
+	);
 }
