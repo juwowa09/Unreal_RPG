@@ -55,13 +55,16 @@ bool UWarriorFunctionLibrary::NativeDoesActorHaveTag(AActor* InActor, FGameplayT
 void UWarriorFunctionLibrary::BP_DoesActorHaveTag(AActor* InActor, FGameplayTag TagToCheck,
 	EWarriorConfirmType& OutConfirmType)
 {
+	// 결과를 branch 로 나타내기 위해서 Enum 사용
 	OutConfirmType = NativeDoesActorHaveTag(InActor,TagToCheck) ? EWarriorConfirmType::Yes : EWarriorConfirmType::No;
 }
 
 UPawnCombatComponent* UWarriorFunctionLibrary::NativeGetPawnCombatComponentFromActor(AActor* InActor)
 {
 	check(InActor)
-
+	
+	// 인터페이스 캐스팅, 인터페이스 구현되어있다면 // 해당 객체가 가지고있는 vtable 과 연결된 Interface 부분 포인터 반환
+	// 객체에 알맞은 virtual 함수가 호출됨
 	if (IPawnCombatInterface* PawnCombatInterface = Cast<IPawnCombatInterface>(InActor))
 	{
 		return PawnCombatInterface->GetPawnCombatComponent();

@@ -9,6 +9,14 @@
 #include "PawnCombatComponent.generated.h"
 
 class AWarriorWeaponBase;
+
+UENUM(BlueprintType)
+enum class EToggleDamageType : uint8
+{
+	CurrentEquippedWeapon,
+	LeftHand,
+	RightHand
+};
 /**
  * 
  */
@@ -34,6 +42,9 @@ public:
 	// 현재 장착중인 무기 태그 반환 함수
 	UFUNCTION(BlueprintCallable,Category="Warrior|Combat")
 	AWarriorWeaponBase* GetCharacterCurrentEquippedWeapon() const;
+
+	UFUNCTION(BlueprintCallable,Category="Warrior|Combat")
+	void ToggleWeaponCollisioin(bool bShouldEnable, EToggleDamageType ToggleDamageType = EToggleDamageType::CurrentEquippedWeapon);
 
 private:
 	// 지니고있는 무기를 태그별로 관리 
