@@ -47,6 +47,11 @@ AWarriorHeroCharacter::AWarriorHeroCharacter()
 	HeroCombatComponent = CreateDefaultSubobject<UHeroCombatComponent>(TEXT("HeroCombatComponent"));
 }
 
+UPawnCombatComponent* AWarriorHeroCharacter::GetPawnCombatComponent() const
+{
+	return HeroCombatComponent;
+}
+
 //캐릭터가 컨트롤러에 연결될 때 호출되는 함수
 void AWarriorHeroCharacter::PossessedBy(AController* NewController)
 {
