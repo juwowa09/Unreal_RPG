@@ -14,6 +14,22 @@ void UDataAsset_StartUpDataBase::GiveToAbilitySystemComponent(UWarriorAbilitySys
 	
 	GrantAbilities(ActivateOnGiveAbilities, InASCToGive,ApplyLevel);
 	GrantAbilities(ReactivateAbilities, InASCToGive,ApplyLevel);
+
+	if (!StartUpGameplayEffects.IsEmpty())
+	{
+		for (const TSubclassOf<UGameplayEffect>& EffectClass : StartUpGameplayEffects)
+		{
+			if (!EffectClass) continue;
+
+			//	CDO = class default object
+			UGameplayEffect* EffectCDO = EffectClass->GetDefaultObject<UGameplayEffect>();
+			InASCToGive->ApplyGameplayEffectToSelf(
+				EffectCDO,
+				ApplyLevel,
+				InASCToGive->MakeEffectContext()	// 이펙트의 컨텍스트 정보 생성함수(시전자, 위치등)
+			);
+		}
+	}
 }
 
 // 실제로 등록하는 함수
