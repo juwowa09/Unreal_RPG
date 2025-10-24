@@ -16,6 +16,10 @@ void UPawnCombatComponent::RegisterSpawnedWeapon(FGameplayTag InWeaponTagToRegis
 	// 현재 무기 등록
 	CharacterCarriedWeaponMap.Emplace(InWeaponTagToRegister, InWeaponToRegister);
 
+	// 무기 델리게이트에 콜백함수를 바인딩 - 무기 등록시점에
+	InWeaponToRegister->OnWeaponHitTarget.BindUObject(this, &ThisClass::OnHitTargetActor);
+	InWeaponToRegister->OnWeaponPullFromTarget.BindUObject(this, &ThisClass::OnWeaponPulledFromTargetActor);
+	
 	if (bRegisterAsEquippedWeapon)
 	{
 		CurrentEquippedWeaponTag = InWeaponTagToRegister;
@@ -67,4 +71,14 @@ void UPawnCombatComponent::ToggleWeaponCollisioin(bool bShouldEnable, EToggleDam
 	}
 
 	// TODO: Handle body collision box
+}
+
+void UPawnCombatComponent::OnHitTargetActor(AActor* HitActor)
+{
+	
+}
+
+void UPawnCombatComponent::OnWeaponPulledFromTargetActor(AActor* InteractedActor)
+{
+	
 }
