@@ -65,4 +65,6 @@ void UPawnCombatComponent::ToggleWeaponCollisioin(bool bShouldEnable, EToggleDam
 			// Debug::Print(WeaponToToggle->GetName() + TEXT(" collision disable"),FColor::Red);
 		}
 	}
+
+	// TODO: Handle body collision box
 }

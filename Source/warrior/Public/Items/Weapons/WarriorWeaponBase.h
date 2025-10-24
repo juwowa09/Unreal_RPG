@@ -24,6 +24,14 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Weapons")
 	UBoxComponent* WeaponCollisionBox;
 
+	// 델리게이트에 등록할 콜백함수
+	UFUNCTION()
+	virtual void OnCollisionBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	// 델리게이트에 등록할 콜백함수
+	UFUNCTION()
+	virtual void OnCollisionBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 public:
 	FORCEINLINE UBoxComponent* GetWeaponCollisionBox() const
 	{return WeaponCollisionBox;}

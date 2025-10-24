@@ -43,6 +43,7 @@ public:
 	UFUNCTION(BlueprintCallable,Category="Warrior|Combat")
 	AWarriorWeaponBase* GetCharacterCurrentEquippedWeapon() const;
 
+	// 현재 무기의 Box Collision 활성, 비활성 토글함수
 	UFUNCTION(BlueprintCallable,Category="Warrior|Combat")
 	void ToggleWeaponCollisioin(bool bShouldEnable, EToggleDamageType ToggleDamageType = EToggleDamageType::CurrentEquippedWeapon);
 
