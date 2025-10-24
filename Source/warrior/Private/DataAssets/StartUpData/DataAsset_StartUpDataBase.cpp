@@ -23,6 +23,8 @@ void UDataAsset_StartUpDataBase::GiveToAbilitySystemComponent(UWarriorAbilitySys
 
 			//	CDO = class default object
 			UGameplayEffect* EffectCDO = EffectClass->GetDefaultObject<UGameplayEffect>();
+
+			// CDO 를 바로 적용시 엔진 내부에서 Spec Handle 자동 생성후 적용
 			InASCToGive->ApplyGameplayEffectToSelf(
 				EffectCDO,
 				ApplyLevel,
@@ -45,6 +47,7 @@ void UDataAsset_StartUpDataBase::GrantAbilities(const TArray<TSubclassOf<UWarrio
 
 		// 어빌리티 인스턴스(스펙)에 넣어서 변수를 만들고
 		FGameplayAbilitySpec AbilitySpec(Ability);
+		
 		// 등록할 아바타를 어빌리티 시스템을 통해 구해오기
 		AbilitySpec.SourceObject = InASCToGive->GetAvatarActor();
 		AbilitySpec.Level = ApplyLevel;
