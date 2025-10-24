@@ -47,8 +47,12 @@ public:
 	UFUNCTION(BlueprintCallable,Category="Warrior|Combat")
 	void ToggleWeaponCollisioin(bool bShouldEnable, EToggleDamageType ToggleDamageType = EToggleDamageType::CurrentEquippedWeapon);
 
+	// Weapon Delegate 에 등록할 콜백 함수
 	virtual void OnHitTargetActor(AActor* HitActor);
 	virtual void OnWeaponPulledFromTargetActor(AActor* InteractedActor);
+
+protected:
+	TArray<AActor*> OverlappedActors;	// 중복처리 하지 않기 위한 배열 변수
 	
 private:
 	// 지니고있는 무기를 태그별로 관리 

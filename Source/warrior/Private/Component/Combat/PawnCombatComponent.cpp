@@ -61,12 +61,12 @@ void UPawnCombatComponent::ToggleWeaponCollisioin(bool bShouldEnable, EToggleDam
 		if (bShouldEnable)
 		{
 			WeaponToToggle->GetWeaponCollisionBox()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-			// Debug::Print(WeaponToToggle->GetName() + TEXT(" collision enable"),FColor::Green);
 		}
 		else
 		{
 			WeaponToToggle->GetWeaponCollisionBox()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			// Debug::Print(WeaponToToggle->GetName() + TEXT(" collision disable"),FColor::Red);
+			
+			OverlappedActors.Empty();	// 공격 한 횟수 지나면 초기화(다시 맞을수 있도록)
 		}
 	}
 
