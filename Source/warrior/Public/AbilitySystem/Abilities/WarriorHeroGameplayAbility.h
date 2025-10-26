@@ -29,7 +29,7 @@ public:
 
 	// 현재 어빌리티가 만들고 ASC 에 적용할 Effect 의 Spec Handle 을 만드는 함수.
 	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
-	FGameplayEffectSpecHandle MakeHeroDamageEffectSpecHandle(TSubclassOf<UGameplayEffect> EffectClass, float InWeaponBaseDamage, FGameplayTag InCurrentAttackTypeTag, int32 InCurrentComboCount);
+	FGameplayEffectSpecHandle MakeHeroDamageEffectSpecHandle(TSubclassOf<UGameplayEffect> EffectClass, float InWeaponBaseDamage, FGameplayTag InCurrentAttackTypeTag, int32 InUsedComboCount);
 	
 private:
 	TWeakObjectPtr<AWarriorHeroCharacter> CachedWarriorHeroCharacter;

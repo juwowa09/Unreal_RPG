@@ -3,6 +3,7 @@
 #pragma once
 #include "GameplayTagContainer.h"
 #include "AbilitySystem/Abilities/WarriorGameplayAbility.h"
+#include "ScalableFloat.h"
 
 #include "WarriorStructTypes.generated.h"
 
@@ -38,6 +39,10 @@ struct FWarriorHeroWeaponData
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (TitleProperty = "InputTag"))
 	TArray<FWarriorHeroAbilitySet> DefaultWeaponAbilities;
+
+	// 단일 float || Curve Table 을 통해 값을 동적으로 가져올 수 있는 변수
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FScalableFloat WeaponBaseDamage;
 };
 
 
