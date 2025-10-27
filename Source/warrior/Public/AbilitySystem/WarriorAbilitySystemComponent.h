@@ -22,11 +22,13 @@ public:
 	void OnAbilityInputPressed(const FGameplayTag& InInputTag);
 	void OnAbilityInputReleased(const FGameplayTag& InInputTag);
 
+	// 무기에 등록된 어빌리티들 등록하는 함수
 	UFUNCTION(BlueprintCallable, Category="Warrior|Ability", meta = (ApplyLevel = "1"))
 	void GrantHeroWeaponAbility(const TArray<FWarriorHeroAbilitySet>& InDefaultWeaponAbilities,
 		int32 ApplyLevel,
 		TArray<FGameplayAbilitySpecHandle>& OutGrantedAbilitySpecHandles);
-	
+
+	// 등록된 어빌리티 삭제하는 함수
 	UFUNCTION(BlueprintCallable, Category="Warrior|Ability")
 	void RemovedGrantedHeroWeaponAbilities(UPARAM(ref) TArray<FGameplayAbilitySpecHandle>& InSpecHandlesToRemove);
 };

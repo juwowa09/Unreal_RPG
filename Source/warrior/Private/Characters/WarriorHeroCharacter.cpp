@@ -146,6 +146,7 @@ void AWarriorHeroCharacter::Input_Look(const FInputActionValue& InputActionValue
 
 void AWarriorHeroCharacter::Input_AbilityInputPressed(FGameplayTag InInputTag)
 {
+	// 전달되는 태그는 Data Asset에 같이 매핑되어있는 태그
 	WarriorAbilitySystemComponent->OnAbilityInputPressed(InInputTag);
 }
 

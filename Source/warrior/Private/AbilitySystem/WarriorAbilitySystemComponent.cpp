@@ -10,6 +10,7 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 {
 	if (!InInputTag.IsValid()) return;
 
+	// 액티브 가능한 어빌리티중에(등록된 어빌리티)
 	for (const FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
 	{
 		// 어빌리티 태그가 없으면 다음 어빌리티로

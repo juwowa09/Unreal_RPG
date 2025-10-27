@@ -5,6 +5,7 @@
 
 UWarriorAttributeSet::UWarriorAttributeSet()
 {
+	// 기본 초기화
 	InitCurrentHealth(1.f);
 	InitMaxHealth(1.f);
 	InitCurrentRage(1.f);
