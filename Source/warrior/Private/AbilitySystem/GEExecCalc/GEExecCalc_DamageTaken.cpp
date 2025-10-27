@@ -11,6 +11,7 @@ struct FWarriorDamageCapture
 
 	FWarriorDamageCapture()
 	{
+		// UWarriorAttributeSet 내부의 AttackPower, DefensePower 값을 캡쳐
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UWarriorAttributeSet, AttackPower, Source, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UWarriorAttributeSet, DefensePower, Source, false);
 	}
