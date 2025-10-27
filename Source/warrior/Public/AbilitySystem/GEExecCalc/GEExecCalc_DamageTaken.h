@@ -13,5 +13,9 @@ UCLASS()
 class WARRIOR_API UGEExecCalc_DamageTaken : public UGameplayEffectExecutionCalculation
 {
 	GENERATED_BODY()
+
+public:
+	UGEExecCalc_DamageTaken();
+	
 	
 };
