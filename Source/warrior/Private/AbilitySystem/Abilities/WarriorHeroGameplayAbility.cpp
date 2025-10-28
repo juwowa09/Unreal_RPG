@@ -58,7 +58,7 @@ FGameplayEffectSpecHandle UWarriorHeroGameplayAbility::MakeHeroDamageEffectSpecH
 	);
 	if (InCurrentAttackTypeTag.IsValid())
 	{
-		// 공격 타입별로 다른 데미지를 주기 위해서 현재 공격 태그를 입력함.
+		// 공격 타입별로 다른 데미지를 주기 위해서 현재 공격 태그를 입력함. 
 		EffectSpecHandle.Data->SetSetByCallerMagnitude(InCurrentAttackTypeTag, InUsedComboCount);
 	}
 	return EffectSpecHandle;
