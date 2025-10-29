@@ -24,6 +24,9 @@ class WARRIOR_API UWarriorAttributeSet : public UAttributeSet
 public:
 	UWarriorAttributeSet();
 
+	// Execution이 끝나고 실제 Attribute에 Modifier가 적용된 직 호출되는 Post 처리 콜백함수, Data 에 모든 처리된 변수가 존재
+	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData &Data) override;
+
 	UPROPERTY(BlueprintReadOnly,Category="Health")
 	FGameplayAttributeData CurrentHealth;
 	ATTRIBUTE_ACCESSORS(UWarriorAttributeSet,CurrentHealth)
