@@ -15,7 +15,7 @@ struct FWarriorDamageCapture
 
 	FWarriorDamageCapture()
 	{
-		// UWarriorAttributeSet 내부의 AttackPower, DefensePower 값을 캡쳐 source, target은 attempt 할때 필요함
+		// UWarriorAttributeSet 내부의 AttackPower, DefensePower 값을 캡쳐 source, target은 Attempt 할때 필요함
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UWarriorAttributeSet, AttackPower, Source, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UWarriorAttributeSet, DefensePower, Target, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UWarriorAttributeSet, DamageTaken, Target, false);
@@ -52,22 +52,24 @@ UGEExecCalc_DamageTaken::UGEExecCalc_DamageTaken()
 void UGEExecCalc_DamageTaken::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
 	FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
-	Super::Execute_Implementation(ExecutionParams, OutExecutionOutput);
-
-	// ExecutionParam = 모든 정보를 다 담고있음 == 공격자, 피격자, EffectSpec, 캡처된 Attribute 등
+	// ExecutionParam = 모든 Context 정보를 다 담고있음 == 공격자, 피격자, EffectSpec, 캡처된 Attribute 등
 	const FGameplayEffectSpec& EffectSpec = ExecutionParams.GetOwningSpec();
 
 	// EffectSpec.GetContext().GetSourceObject();
 	// EffectSpec.GetContext().GetAbility();
 	// EffectSpec.GetContext().GetInstigator();
 	// EffectSpec.GetContext().GetEffectCauser();
-	
+
+	// Aggregator(집계)된 Source, Target 의 태그들과, Soucre Level, Target Level이 필요하다.
 	FAggregatorEvaluateParameters EvaluateParameters;
+	// 현재 Effect 의 Source 오브젝트가 가지고있는 모든 Tags Aggregate
 	EvaluateParameters.SourceTags = EffectSpec.CapturedSourceTags.GetAggregatedTags();
+	// 현재 Effect 의 Target 오브젝트가 가지고있는 모든 Tags Aggregate
 	EvaluateParameters.TargetTags = EffectSpec.CapturedTargetTags.GetAggregatedTags();
 	
 	float SourceAttackPower = 0.f;
-	// 실제로 캡쳐된 공격력(이 시점에서 완전 snap)과 태그들을 바탕으로 수식을 SourceAttackPower에 계산해서 저장하는 함수
+	// 실제로 캡쳐된 공격력(이 시점에서 완전 snap)과 Soucre Target 태그, Level 을 바탕으로 수식을 SourceAttackPower에 계산해서 저장하는 함수
+	// AttackPowerDef 에 정의한 Source, Target 여부에 따라 Params 에서 필요한 것들만 꺼내서 계산
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(GetWarriorDamageCapture().AttackPowerDef, EvaluateParameters, SourceAttackPower);
 	Debug::Print(TEXT("Source Attack Power"), SourceAttackPower);
 	
@@ -122,6 +124,7 @@ void UGEExecCalc_DamageTaken::Execute_Implementation(const FGameplayEffectCustom
 
 	if (FinalDamageDone > 0.f)
 	{
+		// DamageTaken 캡쳐값을 덮어씌우고, Modifier 에 등록시켜 ASC가 적용하도록 만들어라.
 		OutExecutionOutput.AddOutputModifier(
 			FGameplayModifierEvaluatedData(
 				GetWarriorDamageCapture().DamageTakenProperty,
