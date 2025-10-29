@@ -38,18 +38,27 @@ void UHeroCombatComponent::OnHitTargetActor(AActor* HitActor)
 	
 	OverlappedActors.AddUnique(HitActor);		// 맞은 액터 중복처리 X
 
-	// 특정 Actor 가 가지고있는 ASC에게 Event 전달
+	//	Target Actor 가 가지고있는 ASC에게 Event 전달
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(	
 		GetOwningPawn(),	// 이 액터가 GAS 지녀야 함
 		WarriorGamePlayTags::Shared_Event_MeleeHit,	//	액터의 GAS 에 Tag 이벤트 전달 (특정 Ability가 Wait Event 중)
 		Data
+	);
+
+	// 타격되는 순간 느려지는 이벤트를 보내기
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+		GetOwningPawn(),
+		WarriorGamePlayTags::Player_Event_HitPause,
+		FGameplayEventData()
 	);
 }
 
 // 무기 델리게이트에 등록할 콜백함수
 void UHeroCombatComponent::OnWeaponPulledFromTargetActor(AActor* InteractedActor)
 {
-	Super::OnWeaponPulledFromTargetActor(InteractedActor);
-
-	
+	// UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+	// 	GetOwningPawn(),
+	// 	WarriorGamePlayTags::Player_Event_HitPause,
+	// 	FGameplayEventData()
+	// );
 }
