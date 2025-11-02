@@ -5,6 +5,9 @@
 #include "GameplayEffectExtension.h"
 #include "WarriorFunctionLibrary.h"
 #include "WarriorGamePlayTags.h"
+#include "Interfaces/PawnUIInterface.h"
+#include "Component/UI/PawnUIComponent.h"
+#include "Component/UI/HeroUIComponent.h"
 
 #include "WarriorDebugHelper.h"
 
@@ -21,20 +24,41 @@ UWarriorAttributeSet::UWarriorAttributeSet()
 
 void UWarriorAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
 {
-	// 처리된 Attribute Data 가 Current Health 인 경우
+	// 타겟의 UI 받아오기 위함, GetAvatarActor는 Pawn 타입, 그 하위로
+	if (!CachedPawnUIInterface.IsValid())
+	{
+		// 실행시마다 Cast 하지 않고 캐시해두고 사용하기 위함
+		CachedPawnUIInterface = TWeakInterfacePtr<IPawnUIInterface>(Data.Target.GetAvatarActor());
+		//CachedPawnUIInterface = Cast<IPawnUIInterface>(Data.Target.GetAvatarActor());
+	}
+
+	checkf(CachedPawnUIInterface.IsValid(), TEXT("%s didn't implement IPawnUIInterface"),*Data.Target.GetAvatarActor()->GetActorLabel());
+	
+	UPawnUIComponent* PawnUIComponent = CachedPawnUIInterface->GetPawnUIComponent();
+
+	checkf(PawnUIComponent, TEXT("Couldn't extrac a PawnUIComponent from %s"),*Data.Target.GetAvatarActor()->GetActorLabel());
+	
+	// 처리된 (변경이 있는) Attribute Data 가 Current Health 인 경우
 	if (Data.EvaluatedData.Attribute == GetCurrentHealthAttribute())
 	{
 		const float NewCurrentHealth = FMath::Clamp(GetCurrentHealth(), 0.f, GetMaxHealth());
 
 		SetCurrentHealth(NewCurrentHealth);
+
+		PawnUIComponent->OnCurrentHealthChanged.Broadcast(GetCurrentHealth()/GetMaxHealth());
 	}
 
-	// 처리된 Attribute Data 가 Current Rage 인 경우
+	// 처리된 (변경이 있는) Attribute Data 가 Current Rage 인 경우
 	if (Data.EvaluatedData.Attribute == GetCurrentRageAttribute())
 	{
 		const float NewCurrentRage = FMath::Clamp(GetCurrentRage(), 0.f, GetMaxRage());
 
 		SetCurrentRage(NewCurrentRage);
+
+		if (UHeroUIComponent* HeroUIComponent = CachedPawnUIInterface->GetHeroUIComponent())
+		{
+			HeroUIComponent->OnCurrentRageChanged.Broadcast(GetCurrentRage()/ GetMaxRage());
+		}
 	}
 
 	// 처리된 Attribute Data 가 DamageDone 인 경우
@@ -57,8 +81,9 @@ void UWarriorAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffec
 		Debug::Print(DebugString, FColor::Green);
 
 		// TODO:: Notify the UI
+		PawnUIComponent->OnCurrentHealthChanged.Broadcast(GetCurrentHealth()/GetMaxHealth());
 
-		if (NewCurrentHealth == 0.f)
+		if (GetCurrentHealth() == 0.f)
 		{
 			// Target = ASC 를 의미 ASC에 Dead 태그를 추가하여 Dead 를 알린다 
 			UWarriorFunctionLibrary::AddGameplayTagToActorIfNone(

@@ -14,6 +14,7 @@
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "DataAssets/StartUpData/DataAsset_HeroStartUpData.h"
 #include "Component/Combat/HeroCombatComponent.h"
+#include "Component/UI/HeroUIComponent.h"
 
 #include "WarriorDebugHelper.h"
 
@@ -45,11 +46,23 @@ AWarriorHeroCharacter::AWarriorHeroCharacter()
 
 	// CombatComponent 는 확장 컴포넌트 상속 (필요한 기능들 추가)
 	HeroCombatComponent = CreateDefaultSubobject<UHeroCombatComponent>(TEXT("HeroCombatComponent"));
+	
+	HeroUIComponent = CreateDefaultSubobject<UHeroUIComponent>(TEXT("HeroUIComponent"));
 }
 
 UPawnCombatComponent* AWarriorHeroCharacter::GetPawnCombatComponent() const
 {
 	return HeroCombatComponent;
+}
+
+UPawnUIComponent* AWarriorHeroCharacter::GetPawnUIComponent() const
+{
+	return HeroUIComponent;
+}
+
+UHeroUIComponent* AWarriorHeroCharacter::GetHeroUIComponent() const
+{
+	return HeroUIComponent;
 }
 
 //캐릭터가 컨트롤러에 연결될 때 호출되는 함수
