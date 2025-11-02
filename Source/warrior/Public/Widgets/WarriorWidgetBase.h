@@ -7,6 +7,7 @@
 #include "WarriorWidgetBase.generated.h"
 
 class UHeroUIComponent;
+class UEnemyUIComponent;
 
 /**
  * 
@@ -22,5 +23,12 @@ protected:
 
 	// 매개변수 UI Component 에 구독하기 위한 함수
 	UFUNCTION(BlueprintImplementableEvent,meta = (DisplayName = "On Owning Hero UI Component Initialized"))
-	void BP_OnOwningHeroUIComponentInitialized(UHeroUIComponent* OwningUIComponent);
+	void BP_OnOwningHeroUIComponentInitialized(UHeroUIComponent* OwningHeroUIComponent);
+	
+	UFUNCTION(BlueprintImplementableEvent,meta = (DisplayName = "On Owning Enemy UI Component Initialized"))
+	void BP_OnOwningEnemyUIComponentInitialized(UEnemyUIComponent* OwningEnemyUIComponent);
+
+public:
+	UFUNCTION(BlueprintCallable)
+	void InitEnemyCreatedWidget(AActor* OwningEnemyActor);
 };
