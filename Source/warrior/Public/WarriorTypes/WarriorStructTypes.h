@@ -43,6 +43,9 @@ struct FWarriorHeroWeaponData
 	// 단일 float || Curve Table 을 통해 값을 동적으로 가져올 수 있는 변수
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FScalableFloat WeaponBaseDamage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSoftObjectPtr<UTexture2D> SoftWeaponIconTexture;
 };
 
 
