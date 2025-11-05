@@ -12,12 +12,6 @@
 AWarriorAIController::AWarriorAIController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>("PathFollowingComponent"))
 {
-	// 
-	if (UCrowdFollowingComponent* CrowdFollowingComp = Cast<UCrowdFollowingComponent>(GetPathFollowingComponent()))
-	{
-		Debug::Print(TEXT("CrowdFollowingComponent is Valid"), FColor::Green);
-	}
-
 	AISenseConfig_Sight = CreateDefaultSubobject<UAISenseConfig_Sight>("EnemySenseConfig_Sight");
 
 	// 적만 감지, 아군이나 중립대상은 무시
@@ -54,6 +48,39 @@ ETeamAttitude::Type AWarriorAIController::GetTeamAttitudeTowards(const AActor& O
 		return ETeamAttitude::Hostile;		// 적의
 	}
 	return ETeamAttitude::Friendly;		// 같은 팀
+}
+
+void AWarriorAIController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (UCrowdFollowingComponent* CrowdComp = Cast<UCrowdFollowingComponent>(GetPathFollowingComponent()))
+	{
+		// Debug::Print(TEXT("CrowdFollowingComponent is Valid"), FColor::Green);
+		// 서로 부딪히지 않고 부드럽게 피하도록 설정
+		CrowdComp->SetCrowdSimulationState(bEnableDetoureCrowdAvoidance ? ECrowdSimulationState::Enabled : ECrowdSimulationState::Disabled);
+
+		// 얼마나 많은 주변 객체를 감시하고, 얼마나 세밀하게 계산할 것인가
+		switch (DetoueCrowdAvoidanceQuality)
+		{
+		case 1:
+			CrowdComp->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::Low);		break;
+		case 2:
+			CrowdComp->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::Medium);	break;
+		case 3:
+			CrowdComp->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::Good);		break;
+		case 4:
+			CrowdComp->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::High);		break;
+		default:
+			break;
+		}
+
+		// 그룹 1로 설정, 1끼리 서로 회피하도록 설정
+		CrowdComp->SetAvoidanceGroup(1);
+		CrowdComp->SetGroupsToAvoid(1);
+		// 다른 AI 를 인식하는 Range
+		CrowdComp->SetCrowdCollisionQueryRange(CollisionQueryRange);
+	}
 }
 
 void AWarriorAIController::OnEnemyPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
