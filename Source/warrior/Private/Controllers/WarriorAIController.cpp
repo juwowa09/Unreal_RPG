@@ -4,8 +4,8 @@
 #include "Controllers/WarriorAIController.h"
 #include "Navigation/CrowdFollowingComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
-
 #include "WarriorDebugHelper.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 
 // 기본 PathFollowingComponent 를 군중 회피(Navigation Crowd) 로 변경
@@ -38,8 +38,32 @@ AWarriorAIController::AWarriorAIController(const FObjectInitializer& ObjectIniti
 	EnemyPerceptionComponent->SetDominantSense(UAISenseConfig_Sight::StaticClass());
 	// 새로 감지하거나 감지를 잃을 때 여기 등록한 델리게이트를 실행
 	EnemyPerceptionComponent->OnTargetPerceptionUpdated.AddUniqueDynamic(this, &ThisClass::OnEnemyPerceptionUpdated);
+
+	SetGenericTeamId(FGenericTeamId(1));
+}
+
+ETeamAttitude::Type AWarriorAIController::GetTeamAttitudeTowards(const AActor& Other) const
+{
+	// Pawn 인지 검사
+	const APawn* PawnToCheck = Cast<const APawn>(&Other);
+	const IGenericTeamAgentInterface* OtherTeamAgent = Cast<const IGenericTeamAgentInterface>(PawnToCheck->GetController());
+
+	// Other Team Agent가 존재하면서 (인터페이스 구현하면서) TeamID 가 현재 객체와 같지 않을 경우
+	if (OtherTeamAgent && OtherTeamAgent->GetGenericTeamId() != GetGenericTeamId())
+	{
+		return ETeamAttitude::Hostile;		// 적의
+	}
+	return ETeamAttitude::Friendly;		// 같은 팀
 }
 
 void AWarriorAIController::OnEnemyPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
 {
+	if (Stimulus.WasSuccessfullySensed() && Actor)
+	{
+		// Debug::Print(Actor->GetActorNameOrLabel() + TEXT(" was sensed"),FColor::Green);
+		if (UBlackboardComponent* BlackboardComponent = GetBlackboardComponent())
+		{
+			BlackboardComponent->SetValueAsObject(FName("TargetActor"), Actor);
+		}
+	}
 }
