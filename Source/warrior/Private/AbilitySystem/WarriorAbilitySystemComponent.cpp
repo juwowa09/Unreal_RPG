@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "WarriorTypes/WarriorStructTypes.h"
+#include "AbilitySystem/Abilities/WarriorHeroGameplayAbility.h"
 
 #include "WarriorDebugHelper.h"
 
@@ -59,5 +60,30 @@ void UWarriorAbilitySystemComponent::RemovedGrantedHeroWeaponAbilities(
 	}
 	
 	InSpecHandlesToRemove.Empty();
+}
+
+bool UWarriorAbilitySystemComponent::TryActivateAbilityByTag(FGameplayTag AbilityTagToActivate)
+{
+	check(AbilityTagToActivate.IsValid());
+
+	TArray<FGameplayAbilitySpec*> FoundAbilitySpecs;
+	// ASC 가 보유중인 Ability 중에 태그가 일치하는 어빌리티들을 Specs 배열에 담음
+	GetActivatableGameplayAbilitySpecsByAllMatchingTags(AbilityTagToActivate.GetSingleTagContainer(),
+		FoundAbilitySpecs);
+
+	if (!FoundAbilitySpecs.IsEmpty())
+	{
+		// 랜덤한 어빌리티 하나 골라서
+		const int32 RandomAbilityIndex = FMath::RandRange(0,FoundAbilitySpecs.Num() - 1);
+		FGameplayAbilitySpec* SpecToActivate = FoundAbilitySpecs[RandomAbilityIndex];
+
+		check(SpecToActivate);
+		if (!SpecToActivate->IsActive())
+		{
+			// 실행한다
+			return TryActivateAbility(SpecToActivate->Handle);
+		}
+	}
+	return false;
 }
 

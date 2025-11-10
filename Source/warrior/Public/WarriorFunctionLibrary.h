@@ -42,4 +42,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Warrior|FunctionLibrary", meta = (DisplayName = "Get Pawn Combat Component From Actor", ExpandEnumAsExecs = "OutValidType"))
 	static UPawnCombatComponent* BP_GetPawnCombatComponentFromActor(AActor* InActor, EWarriorValidType& OutValidType);
 
+	// 두 액터가 같은 Team 인지 확인하는 헬퍼 함수
+	UFUNCTION(BlueprintPure, Category="Warrior|FunctionLibrary")
+	static bool IsTargetPawnHostile(APawn* QueryPawn, APawn* TargetPawn);
 };

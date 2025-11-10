@@ -2,9 +2,9 @@
 
 
 #include "Items/Weapons/WarriorWeaponBase.h"
-
 #include "MeshPaintVisualize.h"
 #include "Components/BoxComponent.h"
+#include "WarriorFunctionLibrary.h"
 
 #include "WarriorDebugHelper.h"
 
@@ -40,12 +40,11 @@ void AWarriorWeaponBase::OnCollisionBoxBeginOverlap(UPrimitiveComponent* Overlap
 
 	if (APawn* HitPawn = Cast<APawn>(OtherActor))
 	{
-		if (WeaponOwningPawn != HitPawn)
+		if (UWarriorFunctionLibrary::IsTargetPawnHostile(WeaponOwningPawn, HitPawn))
 		{
 			// 무기 Hit 델리게이트에 바인딩 된 함수 실행
 			OnWeaponHitTarget.ExecuteIfBound(OtherActor);
 		}
-		// TODO: Implement hit check for enemy characters
 	}
 }
 
@@ -59,12 +58,11 @@ void AWarriorWeaponBase::OnCollisionBoxEndOverlap(UPrimitiveComponent* Overlappe
 
 	if (APawn* HitPawn = Cast<APawn>(OtherActor))
 	{
-		if (WeaponOwningPawn != HitPawn)
+		if (UWarriorFunctionLibrary::IsTargetPawnHostile(WeaponOwningPawn, HitPawn))
 		{
-			// 무기 빠져나오는 델리게이트에 바인딩 된 함수 실행
+			// 무기 Hit 델리게이트에 바인딩 된 함수 실행
 			OnWeaponPullFromTarget.ExecuteIfBound(OtherActor);
 		}
-		// TODO: Implement hit check for enemy characters
 	}
 }
 

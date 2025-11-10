@@ -31,4 +31,8 @@ public:
 	// 등록된 어빌리티 삭제하는 함수
 	UFUNCTION(BlueprintCallable, Category="Warrior|Ability")
 	void RemovedGrantedHeroWeaponAbilities(UPARAM(ref) TArray<FGameplayAbilitySpecHandle>& InSpecHandlesToRemove);
+
+	// 특정 GameplayTag를 가진 어빌리티를 찾아서 실행하려는 함수
+	UFUNCTION(BlueprintCallable, Category="Warrior|Ability")
+	bool TryActivateAbilityByTag(FGameplayTag AbilityTagToActivate);
 };
