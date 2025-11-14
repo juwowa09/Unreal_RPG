@@ -37,7 +37,7 @@ void UEnemyCombatComponent::OnHitTargetActor(AActor* HitActor)
 	}
 	else
 	{
-		// Player 가 막지 못한 경우 (애너미에 Event 송신)
+		// Player 가 막지 못한 경우 (애너미에 Event 송신) 
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 			GetOwningPawn(),
 			WarriorGamePlayTags::Shared_Event_MeleeHit,

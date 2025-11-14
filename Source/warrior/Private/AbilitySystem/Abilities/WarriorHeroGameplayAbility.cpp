@@ -44,7 +44,7 @@ FGameplayEffectSpecHandle UWarriorHeroGameplayAbility::MakeHeroDamageEffectSpecH
 	ContextHandle.AddSourceObject(GetAvatarActorFromActorInfo());
 	ContextHandle.AddInstigator(GetAvatarActorFromActorInfo(), GetAvatarActorFromActorInfo());
 
-	// SpecHandle 만들기 == ASC를 통해서만 Effect의 Spec을 만들고 Spec을 가리키는 Handle을 만들고 반환.
+	// SpecHandle 만들기 == ASC를 통해서 Effect의 Spec을 만들고 Spec을 가리키는 Handle을 만들고 반환.
 	FGameplayEffectSpecHandle EffectSpecHandle = GetWarriorAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(
 		EffectClass,
 		GetAbilityLevel(),
