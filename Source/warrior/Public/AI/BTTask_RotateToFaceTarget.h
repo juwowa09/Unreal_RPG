@@ -40,6 +40,13 @@ class WARRIOR_API UBTTask_RotateToFaceTarget : public UBTTaskNode
 	virtual FString GetStaticDescription() const override;
 	//~End UBTNode Interface
 
+	// Task 시작시점 한 번 호출
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	// Task Node가 Progress 상태일때 매 프레임 호출
+	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+
+	bool HasReachedAnglePrecision(APawn* QueryPawn,AActor* TargetActor) const;
+
 	// 오차 허용 각도 (멈출 각도)
 	UPROPERTY(EditAnywhere, Category = "Face Target")
 	float AnglePrecision;
