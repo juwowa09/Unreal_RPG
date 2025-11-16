@@ -46,7 +46,12 @@ public:
 	UFUNCTION(BlueprintPure, Category="Warrior|FunctionLibrary")
 	static bool IsTargetPawnHostile(APawn* QueryPawn, APawn* TargetPawn);
 	
-	// 두 액터가 같은 Team 인지 확인하는 헬퍼 함수
+	// 커브 테이블에서 Level 에 따른 Float 값 가져올 때 사용하는 함수
 	UFUNCTION(BlueprintPure, Category="Warrior|FunctionLibrary", meta = (CompactNodeTitle="Get Value AT Level"))
 	static float GetScalableFloatValueAtLevel(const FScalableFloat& InScalableFloat, float InLevel = 1.f);
+
+	// Attacker 와 피해자의 각도 차이 계산, 왼쪽 오른쪽 (외적으로 계산) 판별 함수
+	UFUNCTION(BlueprintPure, Category="Warrior|FunctionLibrary")
+	static FGameplayTag ComputeHitReactDirectionTag(AActor* InAttacker, AActor* InVictim, float& OutAngleDifference);
+	
 };
