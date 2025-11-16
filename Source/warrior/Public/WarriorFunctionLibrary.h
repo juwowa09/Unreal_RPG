@@ -11,7 +11,7 @@
 struct FGameplayTag;
 class UWarriorAbilitySystemComponent;
 class UPawnCombatComponent;
-
+struct FScalableFloat;
 
 /**
  * 
@@ -45,4 +45,8 @@ public:
 	// 두 액터가 같은 Team 인지 확인하는 헬퍼 함수
 	UFUNCTION(BlueprintPure, Category="Warrior|FunctionLibrary")
 	static bool IsTargetPawnHostile(APawn* QueryPawn, APawn* TargetPawn);
+	
+	// 두 액터가 같은 Team 인지 확인하는 헬퍼 함수
+	UFUNCTION(BlueprintPure, Category="Warrior|FunctionLibrary", meta = (CompactNodeTitle="Get Value AT Level"))
+	static float GetScalableFloatValueAtLevel(const FScalableFloat& InScalableFloat, float InLevel = 1.f);
 };
