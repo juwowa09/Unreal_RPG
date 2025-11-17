@@ -143,8 +143,8 @@ bool UWarriorFunctionLibrary::IsValidBlock(AActor* InAttacker, AActor* InDefende
 	// 각도 차이
 	const float DotResult = FVector::DotProduct(InAttacker->GetActorForwardVector(), InDefender->GetActorForwardVector());
 
-	const FString DebugString = FString::Printf(TEXT("dot result: %f %s"), DotResult, DotResult< 0.f? TEXT("Valid") : TEXT("InValid"));
-	Debug::Print(DebugString,DotResult < -0.1f ? FColor::Green : FColor::Red);
+	// const FString DebugString = FString::Printf(TEXT("dot result: %f %s"), DotResult, DotResult< 0.f? TEXT("Valid") : TEXT("InValid"));
+	// Debug::Print(DebugString,DotResult < -0.1f ? FColor::Green : FColor::Red);
 	
 	// 두 벡터가 서로 반대방향이라면 음수 (서로 마주보면)
 	return DotResult < -0.1f;

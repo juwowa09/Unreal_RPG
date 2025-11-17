@@ -38,6 +38,11 @@ void UEnemyCombatComponent::OnHitTargetActor(AActor* HitActor)
 	{
 		//TODO::Handle successful block
 		// 블록 한 경우 (막은 경우)
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+			HitActor,
+			WarriorGamePlayTags::Player_Event_SuccessfulBlock,
+			EventData
+		);
 	}
 	else
 	{
