@@ -34,7 +34,8 @@ inline void UWarriorInputComponent::BindNativeInputAction(const UDataAsset_Input
 	if (UInputAction* FoundAction = InInputConfig->FindNativeInputActionByTag(InInputTag))
 	{
 		// InputTag 에 맞는 InputAction 찾기 성공
-		// action이 triggerEvent 발생시 Object의 Func 호출
+		
+		// InputAction이 TriggerEvent 발생시 Object의 Func 호출
 		BindAction(FoundAction, TriggerEvent, ContextObject, Func);
 	}
 }

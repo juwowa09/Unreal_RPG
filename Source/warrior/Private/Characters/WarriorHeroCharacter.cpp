@@ -65,7 +65,7 @@ UHeroUIComponent* AWarriorHeroCharacter::GetHeroUIComponent() const
 	return HeroUIComponent;
 }
 
-//캐릭터가 컨트롤러에 연결될 때 호출되는 함수
+// 캐릭터가 컨트롤러에 연결될 때 호출되는 함수
 void AWarriorHeroCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
@@ -86,7 +86,7 @@ void AWarriorHeroCharacter::PossessedBy(AController* NewController)
 	}
 }
 
-//컨트롤러 연결 후 인풋 바인딩 시점에 호출되는 함수
+// 컨트롤러 연결 후 인풋 바인딩 시점에 호출되는 함수
 void AWarriorHeroCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	checkf(InputConfigDataAsset,TEXT("Forgot to asign a vaild data asset as input config"))
@@ -98,17 +98,21 @@ void AWarriorHeroCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	SubSystem->AddMappingContext(InputConfigDataAsset->DefaultMappingContext, 0);
 	UWarriorInputComponent* WarriorInputComponent = CastChecked<UWarriorInputComponent>(PlayerInputComponent);
 
+	// 캐릭터 움직임 인풋 바인딩
 	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset,
 		WarriorGamePlayTags::InputTag_Move,
 		ETriggerEvent::Triggered,
 		this,
 		&ThisClass::Input_Move);
+
+	// 카메라 움직임 인풋 바인딩(마우스)
 	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset,
 	WarriorGamePlayTags::InputTag_Look,
 	ETriggerEvent::Triggered,
 	this,
 	&ThisClass::Input_Look);
 
+	// Data Asset에 등록된 어빌리티와 Input 바인딩
 	WarriorInputComponent->BindAbilityInputAction(InputConfigDataAsset,
 		this,
 		&ThisClass::Input_AbilityInputPressed,
@@ -160,11 +164,14 @@ void AWarriorHeroCharacter::Input_Look(const FInputActionValue& InputActionValue
 void AWarriorHeroCharacter::Input_AbilityInputPressed(FGameplayTag InInputTag)
 {
 	// 전달되는 태그는 Data Asset에 같이 매핑되어있는 태그
+	
+	// ASC 에 등록된 어빌리티와 동일한 태그를 가진 어빌리티 찾고 행위를 함 
 	WarriorAbilitySystemComponent->OnAbilityInputPressed(InInputTag);
 }
 
 void AWarriorHeroCharacter::Input_AbilityInputReleased(FGameplayTag InInputTag)
 {
+	// ASC 에 등록된 어빌리티와 동일한 태그를 가진 어빌리티 찾고 행위를 함
 	WarriorAbilitySystemComponent->OnAbilityInputReleased(InInputTag);
 }
 

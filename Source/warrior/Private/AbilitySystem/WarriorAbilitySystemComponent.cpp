@@ -4,6 +4,7 @@
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "WarriorTypes/WarriorStructTypes.h"
 #include "AbilitySystem/Abilities/WarriorHeroGameplayAbility.h"
+#include "WarriorGamePlayTags.h"
 
 #include "WarriorDebugHelper.h"
 
@@ -24,6 +25,19 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 
 void UWarriorAbilitySystemComponent::OnAbilityInputReleased(const FGameplayTag& InInputTag)
 {
+	if (!InInputTag.IsValid() || !InInputTag.MatchesTag(WarriorGamePlayTags::InputTag_MustBeHeld))
+		return;
+
+	// 등록된 어빌리티
+	for (const FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
+	{
+		// 어빌리티 태그가 없으면 다음 어빌리티로
+		if (AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InInputTag) && AbilitySpec.IsActive())
+		{
+			// 활성중인 어빌리티 비활성화
+			CancelAbilityHandle(AbilitySpec.Handle);
+		}
+	}
 }
 
 void UWarriorAbilitySystemComponent::GrantHeroWeaponAbility(
