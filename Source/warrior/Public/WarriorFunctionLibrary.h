@@ -53,5 +53,8 @@ public:
 	// Attacker 와 피해자의 각도 차이 계산, 왼쪽 오른쪽 (외적으로 계산) 판별 함수
 	UFUNCTION(BlueprintPure, Category="Warrior|FunctionLibrary")
 	static FGameplayTag ComputeHitReactDirectionTag(AActor* InAttacker, AActor* InVictim, float& OutAngleDifference);
-	
+
+	// 두 액터가 서로 바라보고있는지 아닌지 판별
+	UFUNCTION(BlueprintPure, Category="Warrior|FunctionLibrary")
+	static bool IsValidBlock(AActor* InAttacker, AActor* InDefender);
 };

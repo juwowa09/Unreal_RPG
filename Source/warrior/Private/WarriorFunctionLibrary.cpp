@@ -9,6 +9,8 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "WarriorGamePlayTags.h"
 
+#include "WarriorDebugHelper.h"
+
 UWarriorAbilitySystemComponent* UWarriorFunctionLibrary::NativeGetWarriorASCFromActor(AActor* InActor)
 {
 	check(InActor);
@@ -132,5 +134,19 @@ FGameplayTag UWarriorFunctionLibrary::ComputeHitReactDirectionTag(AActor* InAtta
 		return WarriorGamePlayTags::Shared_Status_HitReact_Back;
 
 	return FGameplayTag();
+}
+
+bool UWarriorFunctionLibrary::IsValidBlock(AActor* InAttacker, AActor* InDefender)
+{
+	check(InAttacker && InDefender);
+
+	// 각도 차이
+	const float DotResult = FVector::DotProduct(InAttacker->GetActorForwardVector(), InDefender->GetActorForwardVector());
+
+	const FString DebugString = FString::Printf(TEXT("dot result: %f %s"), DotResult, DotResult< 0.f? TEXT("Valid") : TEXT("InValid"));
+	Debug::Print(DebugString,DotResult < -0.1f ? FColor::Green : FColor::Red);
+	
+	// 두 벡터가 서로 반대방향이라면 음수 (서로 마주보면)
+	return DotResult < -0.1f;
 }
 
