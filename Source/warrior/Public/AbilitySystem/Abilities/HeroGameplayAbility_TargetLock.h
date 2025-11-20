@@ -21,6 +21,9 @@ protected:
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	//~ End UGameplayAbility Interface
 
+	UFUNCTION(BlueprintCallable)
+	void OnTargetLockTick(float DeltaTime);
+
 private:
 	// Lock 실행하는 함수
 	void TryLockOnTarget();
@@ -56,6 +59,9 @@ private:
 	// 클래스 자체를 가리키는 변수
 	UPROPERTY(EditDefaultsOnly,Category="Target Lock")
 	TSubclassOf<UWarriorWidgetBase> TargetLockWidgetClass;
+	
+	UPROPERTY(EditDefaultsOnly,Category="Target Lock")
+	float TargetLockRotationInterpSpeed = 5.f;
 	
 	// Lock 가능한 액터들 저장
 	UPROPERTY()
