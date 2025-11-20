@@ -6,6 +6,7 @@
 #include "AbilitySystem/Abilities/WarriorHeroGameplayAbility.h"
 #include "HeroGameplayAbility_TargetLock.generated.h"
 
+class UWarriorWidgetBase;
 /**
  * 
  */
@@ -23,14 +24,15 @@ protected:
 private:
 	// Lock 실행하는 함수
 	void TryLockOnTarget();
-
 	// 박스 밀면서 Lock 가능한 Actor 찾는 함수
 	void GetAvailableActorsToLock();
-
 	// 가장 가까운 타겟 가져오는 함수
 	AActor* GetNearestTargetFromAvailableActors(const TArray<AActor*>& InAvailableActors);
+	// 위젯 그리기
+	void DrawTargetLockWidget();
+	void SetTargetLockWidgetPosition();
 
-	// 어빌리티 끝날때 호출하는 ㅎ마수들
+	// 어빌리티 끝날때 호출하는 함수들
 	void CancelTargetLockAbility();
 	void CleanUp();
 
@@ -51,10 +53,20 @@ private:
 	UPROPERTY(EditDefaultsOnly,Category="Target Lock")
 	bool bShowPersistentDebugShape;
 
+	// 클래스 자체를 가리키는 변수
+	UPROPERTY(EditDefaultsOnly,Category="Target Lock")
+	TSubclassOf<UWarriorWidgetBase> TargetLockWidgetClass;
+	
 	// Lock 가능한 액터들 저장
 	UPROPERTY()
 	TArray<AActor*> AvailableActorsToLock;
 
 	UPROPERTY()
 	AActor* CurrentLockedActor;
+	
+	UPROPERTY()
+	UWarriorWidgetBase* DrawnTargetLockWidget;
+	
+	UPROPERTY()
+	FVector2D TargetLockWidgetSize = FVector2D::ZeroVector;
 };

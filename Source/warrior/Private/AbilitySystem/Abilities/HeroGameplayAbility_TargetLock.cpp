@@ -5,14 +5,19 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Characters/WarriorHeroCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "Widgets/WarriorWidgetBase.h"
+#include "Controllers/WarriorHeroController.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
+#include "Blueprint/WidgetTree.h"
+#include "Components/SizeBox.h"
 
 #include "WarriorDebugHelper.h"
-#include "AnimNodes/AnimNode_RandomPlayer.h"
 
 void UHeroGameplayAbility_TargetLock::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                                       const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
                                                       const FGameplayEventData* TriggerEventData)
 {
+	// 어빌리티 활성시 Target
 	TryLockOnTarget();
 	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
@@ -22,11 +27,13 @@ void UHeroGameplayAbility_TargetLock::EndAbility(const FGameplayAbilitySpecHandl
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	bool bReplicateEndAbility, bool bWasCancelled)
 {
+	// 어빌리티 끝날 시 초기화
 	CleanUp();
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
+// 실제로 Ability Activation 에서 호출, 그리는 함수
 void UHeroGameplayAbility_TargetLock::TryLockOnTarget()
 {
 	GetAvailableActorsToLock();
@@ -43,7 +50,11 @@ void UHeroGameplayAbility_TargetLock::TryLockOnTarget()
 
 	if (CurrentLockedActor)
 	{
-		Debug::Print(CurrentLockedActor->GetActorNameOrLabel());
+		// 위젯 그리기
+		DrawTargetLockWidget();
+
+		// 위젯 위치 설정
+		SetTargetLockWidgetPosition();
 	}
 	else
 	{
@@ -51,6 +62,7 @@ void UHeroGameplayAbility_TargetLock::TryLockOnTarget()
 	}
 }
 
+// 타겟 락 가능한 적 받아오는 함수
 void UHeroGameplayAbility_TargetLock::GetAvailableActorsToLock()
 {
 	// 결과로 받아올 배열
@@ -85,6 +97,7 @@ void UHeroGameplayAbility_TargetLock::GetAvailableActorsToLock()
 	}
 }
 
+// 가장 가까운 대상 가져오기
 AActor* UHeroGameplayAbility_TargetLock::GetNearestTargetFromAvailableActors(const TArray<AActor*>& InAvailableActors)
 {
 	float ClosetDistance = 0.f;
@@ -97,9 +110,67 @@ AActor* UHeroGameplayAbility_TargetLock::GetNearestTargetFromAvailableActors(con
 	);
 }
 
+// 실제로 Target Lock 그리는 부분
+void UHeroGameplayAbility_TargetLock::DrawTargetLockWidget()
+{
+	if (!DrawnTargetLockWidget)
+	{
+		checkf(TargetLockWidgetClass, TEXT("Forgot to assgin a valid widget class in Blueprint"));
+
+		// 위젯 create == controller 필
+		DrawnTargetLockWidget = CreateWidget<UWarriorWidgetBase>(GetHeroControllerFromActorInfo(), TargetLockWidgetClass);
+
+		check(DrawnTargetLockWidget);
+
+		// Widget Viewport 에 추가 (그리기)
+		DrawnTargetLockWidget->AddToViewport();	
+	}
+}
+
+// 뷰포트에 Lock Position 위치시키는 함수
+void UHeroGameplayAbility_TargetLock::SetTargetLockWidgetPosition()
+{
+	if (!DrawnTargetLockWidget || !CurrentLockedActor)
+	{
+		CancelTargetLockAbility();
+		return;
+	}
+
+	FVector2D ScreenPosition;
+
+	// Controller -> CameraManager -> Viewport -> CameraComponent 로 이어져서 Viewport 를 받아옴
+	UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(
+		GetHeroControllerFromActorInfo(),
+		CurrentLockedActor->GetActorLocation(),
+		ScreenPosition,
+		true		// 플레이어 Viewport 를 기준으로 그리기
+	);
+
+	// 타겟 위치를 왼쪽 모서리 기준으로 Widget 을 그렸기 때문에 반절씩 위치를 빼줘야함
+	if (TargetLockWidgetSize == FVector2D::ZeroVector)
+	{
+		// 람다 함수를 쓰는 이유 == 그 자리에서 즉석으로 처리할 작은 함수를 만들기, this 로 현재 객체 내부 변수 접근 가능
+		// 내부 모든 위젯에 대해서 람다 함수 실행
+		DrawnTargetLockWidget->WidgetTree->ForEachWidget(
+			[this](UWidget* FoundWidget)
+			{
+				// 찾은 것만 저장
+				if (USizeBox* FoundSizeBox = Cast<USizeBox>(FoundWidget))
+				{
+					TargetLockWidgetSize.X = FoundSizeBox->GetWidthOverride();
+					TargetLockWidgetSize.Y = FoundSizeBox->GetHeightOverride();
+				}
+			}
+		);		
+	}
+	// 제대로 위치 계산해서 적용
+	ScreenPosition -= (TargetLockWidgetSize / 2.f);
+	DrawnTargetLockWidget->SetPositionInViewport(ScreenPosition, false);
+}
+
+// 현재 어빌리티 하나만 캔슬하는 함수, true == 서버, 클라 모두에게 캔슬하라 명령
 void UHeroGameplayAbility_TargetLock::CancelTargetLockAbility()
 {
-	// 현재 어빌리티 하나만 캔슬하는 함수, true == 서버, 클라 모두에게 캔슬해라
 	CancelAbility(
 		GetCurrentAbilitySpecHandle(),
 		GetCurrentActorInfo(),
@@ -113,4 +184,8 @@ void UHeroGameplayAbility_TargetLock::CleanUp()
 	// 어빌리티 끝날때 클린 업
 	AvailableActorsToLock.Empty();
 	CurrentLockedActor = nullptr;
+	if (DrawnTargetLockWidget)
+	{
+		DrawnTargetLockWidget->RemoveFromParent();
+	}
 }
