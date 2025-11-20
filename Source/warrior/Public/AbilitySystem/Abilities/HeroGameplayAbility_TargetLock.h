@@ -27,6 +27,15 @@ private:
 	// 박스 밀면서 Lock 가능한 Actor 찾는 함수
 	void GetAvailableActorsToLock();
 
+	// 가장 가까운 타겟 가져오는 함수
+	AActor* GetNearestTargetFromAvailableActors(const TArray<AActor*>& InAvailableActors);
+
+	// 어빌리티 끝날때 호출하는 ㅎ마수들
+	void CancelTargetLockAbility();
+	void CleanUp();
+
+	// 변수영역
+
 	// 박스 거리 어디까지 탐색
 	UPROPERTY(EditDefaultsOnly,Category="Target Lock")
 	float BoxTraceDistancce = 5000.f;
@@ -45,4 +54,7 @@ private:
 	// Lock 가능한 액터들 저장
 	UPROPERTY()
 	TArray<AActor*> AvailableActorsToLock;
+
+	UPROPERTY()
+	AActor* CurrentLockedActor;
 };

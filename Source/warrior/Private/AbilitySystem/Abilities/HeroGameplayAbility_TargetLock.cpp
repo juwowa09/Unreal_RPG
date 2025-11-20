@@ -2,14 +2,16 @@
 
 
 #include "AbilitySystem/Abilities/HeroGameplayAbility_TargetLock.h"
-
-#include "WarriorDebugHelper.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Characters/WarriorHeroCharacter.h"
+#include "Kismet/GameplayStatics.h"
+
+#include "WarriorDebugHelper.h"
+#include "AnimNodes/AnimNode_RandomPlayer.h"
 
 void UHeroGameplayAbility_TargetLock::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-	const FGameplayEventData* TriggerEventData)
+                                                      const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+                                                      const FGameplayEventData* TriggerEventData)
 {
 	TryLockOnTarget();
 	
@@ -20,12 +22,33 @@ void UHeroGameplayAbility_TargetLock::EndAbility(const FGameplayAbilitySpecHandl
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	bool bReplicateEndAbility, bool bWasCancelled)
 {
+	CleanUp();
+	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
 void UHeroGameplayAbility_TargetLock::TryLockOnTarget()
 {
 	GetAvailableActorsToLock();
+
+	// 비어있으면 Target 할 게 없으므로 리턴
+	if (AvailableActorsToLock.IsEmpty())
+	{
+		CancelTargetLockAbility();
+		return;
+	}
+
+	// 가장가까운 녀석 가져오기
+	CurrentLockedActor = GetNearestTargetFromAvailableActors(AvailableActorsToLock);
+
+	if (CurrentLockedActor)
+	{
+		Debug::Print(CurrentLockedActor->GetActorNameOrLabel());
+	}
+	else
+	{
+		CancelTargetLockAbility();
+	}
 }
 
 void UHeroGameplayAbility_TargetLock::GetAvailableActorsToLock()
@@ -57,9 +80,37 @@ void UHeroGameplayAbility_TargetLock::GetAvailableActorsToLock()
 			if (HitActor != GetHeroCharacterFromActorInfo())
 			{
 				AvailableActorsToLock.AddUnique(HitActor);
-
-				Debug::Print(HitActor->GetActorNameOrLabel());
 			}
 		}
 	}
+}
+
+AActor* UHeroGameplayAbility_TargetLock::GetNearestTargetFromAvailableActors(const TArray<AActor*>& InAvailableActors)
+{
+	float ClosetDistance = 0.f;
+
+	// 가장 가까운 Target 하나 가져오기
+	return UGameplayStatics::FindNearestActor(
+		GetHeroCharacterFromActorInfo()->GetActorLocation(),
+		InAvailableActors,
+		ClosetDistance
+	);
+}
+
+void UHeroGameplayAbility_TargetLock::CancelTargetLockAbility()
+{
+	// 현재 어빌리티 하나만 캔슬하는 함수, true == 서버, 클라 모두에게 캔슬해라
+	CancelAbility(
+		GetCurrentAbilitySpecHandle(),
+		GetCurrentActorInfo(),
+		GetCurrentActivationInfo(),
+		true
+		);
+}
+
+void UHeroGameplayAbility_TargetLock::CleanUp()
+{
+	// 어빌리티 끝날때 클린 업
+	AvailableActorsToLock.Empty();
+	CurrentLockedActor = nullptr;
 }
