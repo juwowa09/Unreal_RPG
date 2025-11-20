@@ -18,8 +18,24 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 		// 어빌리티 태그가 없으면 다음 어빌리티로
 		if (!AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InInputTag)) continue;
 
-		// 기능 활성화
-		TryActivateAbility(AbilitySpec.Handle);
+		// 토글 태그의 인풋의 경우, 어빌리티가 활성화 되어있으면 비활성, 아니면 반대
+		if (InInputTag.MatchesTag(WarriorGamePlayTags::InputTag_Toggleable))
+		{
+			if (AbilitySpec.IsActive())
+			{
+				CancelAbilityHandle(AbilitySpec.Handle);
+			}
+			else
+			{
+				// 기능 활성화
+				TryActivateAbility(AbilitySpec.Handle);
+			}
+		}
+		else
+		{
+			// 토글이 아닌 어빌리티 기능 활성화
+			TryActivateAbility(AbilitySpec.Handle);
+		}
 	}
 }
 
