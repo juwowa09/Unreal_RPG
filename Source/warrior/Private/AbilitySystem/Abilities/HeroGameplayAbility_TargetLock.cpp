@@ -17,6 +17,7 @@
 #include "EnhancedInputSubsystems.h"
 
 #include "WarriorDebugHelper.h"
+#include "AnimNodes/AnimNode_RandomPlayer.h"
 
 void UHeroGameplayAbility_TargetLock::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                                       const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
@@ -62,12 +63,14 @@ void UHeroGameplayAbility_TargetLock::OnTargetLockTick(float DeltaTime)
 
 
 	// 현재 캐릭터 방향 고정 회전값
-	const FRotator LookAtRot = UKismetMathLibrary::FindLookAtRotation(
+	FRotator LookAtRot = UKismetMathLibrary::FindLookAtRotation(
 		GetHeroCharacterFromActorInfo()->GetActorLocation(),
 		CurrentLockedActor->GetActorLocation()
 	);
 
-	// 카메라는 Control Rot 을 사용함
+	LookAtRot -= FRotator(TargetLockCameraOffsetDistance, 0.f, 0.f);
+
+	// 카메라는 Control Rot 을 사용함 오일러각
 	const FRotator CurrentControlRot = GetHeroControllerFromActorInfo()->GetControlRotation();
 	// 부드럽게 보간한 값을 가져옴
 	const FRotator TargetRot = FMath::RInterpTo(CurrentControlRot,LookAtRot,DeltaTime, TargetLockRotationInterpSpeed);
@@ -77,6 +80,31 @@ void UHeroGameplayAbility_TargetLock::OnTargetLockTick(float DeltaTime)
 	if (bShouldOverrideRotatioin)
 	{
 		GetHeroCharacterFromActorInfo()->SetActorRotation(FRotator(0.f,TargetRot.Yaw,0.f));
+	}
+}
+
+void UHeroGameplayAbility_TargetLock::SwitchTarget(const FGameplayTag& InSwitchDirectionTag)
+{
+	GetAvailableActorsToLock();
+
+	TArray<AActor*> ActorsOnLeft;
+	TArray<AActor*> ActorsOnRight;
+	AActor* NewTargetToLock = nullptr;
+	
+	GetAvailableActorsAroundTarget(ActorsOnLeft,ActorsOnRight);
+
+	if (InSwitchDirectionTag == WarriorGamePlayTags::Player_Event_SwitchTarget_Left)
+	{
+		NewTargetToLock = GetNearestTargetFromAvailableActors(ActorsOnLeft);
+	}
+	else
+	{
+		NewTargetToLock = GetNearestTargetFromAvailableActors(ActorsOnRight);
+	}
+
+	if (NewTargetToLock)
+	{
+		CurrentLockedActor = NewTargetToLock;
 	}
 }
 
@@ -112,6 +140,7 @@ void UHeroGameplayAbility_TargetLock::TryLockOnTarget()
 // 타겟 락 가능한 적 받아오는 함수
 void UHeroGameplayAbility_TargetLock::GetAvailableActorsToLock()
 {
+	AvailableActorsToLock.Empty();
 	// 결과로 받아올 배열
 	TArray<FHitResult> BoxTraceHits;
 
@@ -144,7 +173,7 @@ void UHeroGameplayAbility_TargetLock::GetAvailableActorsToLock()
 	}
 }
 
-// 가장 가까운 대상 가져오기
+// 현재 Hero 에서 가장 가까운 대상 가져오기
 AActor* UHeroGameplayAbility_TargetLock::GetNearestTargetFromAvailableActors(const TArray<AActor*>& InAvailableActors)
 {
 	float ClosetDistance = 0.f;
@@ -155,6 +184,36 @@ AActor* UHeroGameplayAbility_TargetLock::GetNearestTargetFromAvailableActors(con
 		InAvailableActors,
 		ClosetDistance
 	);
+}
+
+void UHeroGameplayAbility_TargetLock::GetAvailableActorsAroundTarget(TArray<AActor*>& OutActorsOnLeft,
+	TArray<AActor*>& OutActorsOnRight)
+{
+	if (!CurrentLockedActor || AvailableActorsToLock.IsEmpty())
+	{
+		CancelTargetLockAbility();
+		return;
+	}
+	const FVector PlayerLocation = GetHeroCharacterFromActorInfo()->GetActorLocation();
+	const FVector PlayerToCurrentNormalized = (CurrentLockedActor->GetActorLocation() - PlayerLocation).GetSafeNormal();
+
+	for (AActor* AvailableActor : AvailableActorsToLock)
+	{
+		if (!AvailableActor || AvailableActor == CurrentLockedActor) continue;
+
+		const FVector PlayerToAvailableNormalized = (AvailableActor->GetActorLocation() - PlayerLocation).GetSafeNormal();
+
+		const FVector CrossResult = FVector::CrossProduct(PlayerToCurrentNormalized, PlayerToAvailableNormalized);
+
+		if (CrossResult.Z > 0.f)
+		{
+			OutActorsOnRight.AddUnique(AvailableActor);
+		}
+		else
+		{
+			OutActorsOnLeft.AddUnique(AvailableActor);
+		}
+	}
 }
 
 // 실제로 Target Lock 그리는 부분

@@ -24,6 +24,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void OnTargetLockTick(float DeltaTime);
+	
+	UFUNCTION(BlueprintCallable)
+	void SwitchTarget(const FGameplayTag& InSwitchDirectionTag);
 
 private:
 	// Lock 실행하는 함수
@@ -32,6 +35,7 @@ private:
 	void GetAvailableActorsToLock();
 	// 가장 가까운 타겟 가져오는 함수
 	AActor* GetNearestTargetFromAvailableActors(const TArray<AActor*>& InAvailableActors);
+	void GetAvailableActorsAroundTarget(TArray<AActor*>& OutActorsOnLeft, TArray<AActor*>& OutActorsOnRight);
 	// 위젯 그리기
 	void DrawTargetLockWidget();
 	// Widget 위치 설정, 보정
@@ -77,6 +81,8 @@ private:
 	UPROPERTY(EditDefaultsOnly,Category="Target Lock")
 	UInputMappingContext* TargetLockMappingContext;
 	
+	UPROPERTY(EditDefaultsOnly,Category="Target Lock")
+	float TargetLockCameraOffsetDistance = 20.f;
 	// Lock 가능한 액터들 저장
 	UPROPERTY()
 	TArray<AActor*> AvailableActorsToLock;
