@@ -112,6 +112,19 @@ void AWarriorHeroCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	this,
 	&ThisClass::Input_Look);
 
+	// Target Lock Input Switch Bind
+	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset,
+		WarriorGamePlayTags::InputTag_SwitchTarget,
+		ETriggerEvent::Triggered,
+		this,
+		&ThisClass::Input_SwitchTargetTriggered);
+	
+	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset,
+		WarriorGamePlayTags::InputTag_SwitchTarget,
+		ETriggerEvent::Completed,
+		this,
+		&ThisClass::Input_SwitchTargetCompleted);
+
 	// Data Asset에 등록된 어빌리티와 Input 바인딩
 	WarriorInputComponent->BindAbilityInputAction(InputConfigDataAsset,
 		this,
@@ -159,6 +172,14 @@ void AWarriorHeroCharacter::Input_Look(const FInputActionValue& InputActionValue
 	{
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void AWarriorHeroCharacter::Input_SwitchTargetTriggered(const FInputActionValue& InputActionValue)
+{
+}
+
+void AWarriorHeroCharacter::Input_SwitchTargetCompleted(const FInputActionValue& InputActionValue)
+{
 }
 
 void AWarriorHeroCharacter::Input_AbilityInputPressed(FGameplayTag InInputTag)

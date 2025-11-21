@@ -6,6 +6,7 @@
 #include "AbilitySystem/Abilities/WarriorHeroGameplayAbility.h"
 #include "HeroGameplayAbility_TargetLock.generated.h"
 
+class UInputMappingContext;
 class UWarriorWidgetBase;
 /**
  * 
@@ -33,11 +34,18 @@ private:
 	AActor* GetNearestTargetFromAvailableActors(const TArray<AActor*>& InAvailableActors);
 	// 위젯 그리기
 	void DrawTargetLockWidget();
+	// Widget 위치 설정, 보정
 	void SetTargetLockWidgetPosition();
+	// 타겟 Lock 시 움직임 속도 설정
+	void InitTargetLockMovement();
+	// 매핑컨텍스트 추가
+	void InitTargetLockMappingContext();
 
 	// 어빌리티 끝날때 호출하는 함수들
 	void CancelTargetLockAbility();
 	void CleanUp();
+	void ResetTargetLockMovement();
+	void ResetTargetLockMappingContext();
 
 	// 변수영역
 
@@ -63,6 +71,12 @@ private:
 	UPROPERTY(EditDefaultsOnly,Category="Target Lock")
 	float TargetLockRotationInterpSpeed = 5.f;
 	
+	UPROPERTY(EditDefaultsOnly,Category="Target Lock")
+	float TargetLockMaxWalkSpeed = 200.f;
+	
+	UPROPERTY(EditDefaultsOnly,Category="Target Lock")
+	UInputMappingContext* TargetLockMappingContext;
+	
 	// Lock 가능한 액터들 저장
 	UPROPERTY()
 	TArray<AActor*> AvailableActorsToLock;
@@ -75,4 +89,7 @@ private:
 	
 	UPROPERTY()
 	FVector2D TargetLockWidgetSize = FVector2D::ZeroVector;
+	
+	UPROPERTY()
+	float CachedDefaultMaxWalkSpeed = 0.f;
 };

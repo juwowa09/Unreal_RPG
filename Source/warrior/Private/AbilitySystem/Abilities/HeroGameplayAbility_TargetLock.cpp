@@ -13,6 +13,8 @@
 #include "WarriorFunctionLibrary.h"
 #include "WarriorGamePlayTags.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "EnhancedInputSubsystems.h"
 
 #include "WarriorDebugHelper.h"
 
@@ -22,6 +24,8 @@ void UHeroGameplayAbility_TargetLock::ActivateAbility(const FGameplayAbilitySpec
 {
 	// 어빌리티 활성시 Target
 	TryLockOnTarget();
+	InitTargetLockMovement();
+	InitTargetLockMappingContext();
 	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
@@ -31,11 +35,14 @@ void UHeroGameplayAbility_TargetLock::EndAbility(const FGameplayAbilitySpecHandl
 	bool bReplicateEndAbility, bool bWasCancelled)
 {
 	// 어빌리티 끝날 시 초기화
+	ResetTargetLockMovement();
+	ResetTargetLockMappingContext();
 	CleanUp();
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
+// Tick Task 를 통해 계속해서 Widget 업데이트 하는 함수
 void UHeroGameplayAbility_TargetLock::OnTargetLockTick(float DeltaTime)
 {
 	if (!CurrentLockedActor ||
@@ -49,24 +56,26 @@ void UHeroGameplayAbility_TargetLock::OnTargetLockTick(float DeltaTime)
 
 	SetTargetLockWidgetPosition();
 
-	const bool bShouldOverrideRotatioin = true;
-	// 	!UWarriorFunctionLibrary::NativeDoesActorHaveTag(GetHeroCharacterFromActorInfo(), WarriorGamePlayTags::Player_Status_Rolling)
+	const bool bShouldOverrideRotatioin = 
+		!UWarriorFunctionLibrary::NativeDoesActorHaveTag(GetHeroCharacterFromActorInfo(), WarriorGamePlayTags::Player_Status_Rolling);
 	// && !UWarriorFunctionLibrary::NativeDoesActorHaveTag(GetHeroCharacterFromActorInfo(), WarriorGamePlayTags::Player_Status_Blocking);
 
+
+	// 현재 캐릭터 방향 고정 회전값
+	const FRotator LookAtRot = UKismetMathLibrary::FindLookAtRotation(
+		GetHeroCharacterFromActorInfo()->GetActorLocation(),
+		CurrentLockedActor->GetActorLocation()
+	);
+
+	// 카메라는 Control Rot 을 사용함
+	const FRotator CurrentControlRot = GetHeroControllerFromActorInfo()->GetControlRotation();
+	// 부드럽게 보간한 값을 가져옴
+	const FRotator TargetRot = FMath::RInterpTo(CurrentControlRot,LookAtRot,DeltaTime, TargetLockRotationInterpSpeed);
+
+	GetHeroControllerFromActorInfo()->SetControlRotation(FRotator(TargetRot.Pitch,TargetRot.Yaw,0.f));
+	
 	if (bShouldOverrideRotatioin)
 	{
-		// 현재 캐릭터 방향 고정 회전값
-		const FRotator LookAtRot = UKismetMathLibrary::FindLookAtRotation(
-			GetHeroCharacterFromActorInfo()->GetActorLocation(),
-			CurrentLockedActor->GetActorLocation()
-		);
-
-		// 카메라는 Control Rot 을 사용함
-		const FRotator CurrentControlRot = GetHeroControllerFromActorInfo()->GetControlRotation();
-		// 부드럽게 보간한 값을 가져옴
-		const FRotator TargetRot = FMath::RInterpTo(CurrentControlRot,LookAtRot,DeltaTime, TargetLockRotationInterpSpeed);
-
-		GetHeroControllerFromActorInfo()->SetControlRotation(FRotator(TargetRot.Pitch,TargetRot.Yaw,0.f));
 		GetHeroCharacterFromActorInfo()->SetActorRotation(FRotator(0.f,TargetRot.Yaw,0.f));
 	}
 }
@@ -206,6 +215,25 @@ void UHeroGameplayAbility_TargetLock::SetTargetLockWidgetPosition()
 	DrawnTargetLockWidget->SetPositionInViewport(ScreenPosition, false);
 }
 
+void UHeroGameplayAbility_TargetLock::InitTargetLockMovement()
+{
+	CachedDefaultMaxWalkSpeed = GetHeroCharacterFromActorInfo()->GetCharacterMovement()->MaxWalkSpeed;
+	GetHeroCharacterFromActorInfo()->GetCharacterMovement()->MaxWalkSpeed = TargetLockMaxWalkSpeed;
+}
+
+void UHeroGameplayAbility_TargetLock::InitTargetLockMappingContext()
+{
+	// PlayerController → LocalPlayer 로 연결 (인풋이 들어오는 곳이 LocalPlayer)
+	const ULocalPlayer* LocalPlayer = GetHeroControllerFromActorInfo()->GetLocalPlayer();
+
+	// 인풋 감진 서브시스템
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer);
+
+	check(Subsystem)
+
+	Subsystem->AddMappingContext(TargetLockMappingContext, 3);
+}
+
 // 현재 어빌리티 하나만 캔슬하는 함수, true == 서버, 클라 모두에게 캔슬하라 명령
 void UHeroGameplayAbility_TargetLock::CancelTargetLockAbility()
 {
@@ -230,4 +258,30 @@ void UHeroGameplayAbility_TargetLock::CleanUp()
 	DrawnTargetLockWidget = nullptr;
 
 	TargetLockWidgetSize = FVector2D::ZeroVector;
+	CachedDefaultMaxWalkSpeed = 0.f;
+}
+
+void UHeroGameplayAbility_TargetLock::ResetTargetLockMovement()
+{
+	if (CachedDefaultMaxWalkSpeed > 0.f)
+	{
+		GetHeroCharacterFromActorInfo()->GetCharacterMovement()->MaxWalkSpeed = CachedDefaultMaxWalkSpeed;
+	}
+}
+
+void UHeroGameplayAbility_TargetLock::ResetTargetLockMappingContext()
+{
+	if (GetHeroControllerFromActorInfo())
+	{
+		return;
+	}
+	// PlayerController → LocalPlayer 로 연결 (인풋이 들어오는 곳이 LocalPlayer)
+	const ULocalPlayer* LocalPlayer = GetHeroControllerFromActorInfo()->GetLocalPlayer();
+
+	// 인풋 감진 서브시스템
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer);
+
+	check(Subsystem)
+
+	Subsystem->RemoveMappingContext(TargetLockMappingContext);
 }
