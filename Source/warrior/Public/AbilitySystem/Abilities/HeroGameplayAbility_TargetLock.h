@@ -72,7 +72,7 @@ private:
 	float TargetLockRotationInterpSpeed = 5.f;
 	
 	UPROPERTY(EditDefaultsOnly,Category="Target Lock")
-	float TargetLockMaxWalkSpeed = 200.f;
+	float TargetLockMaxWalkSpeed = 300.f;
 	
 	UPROPERTY(EditDefaultsOnly,Category="Target Lock")
 	UInputMappingContext* TargetLockMappingContext;

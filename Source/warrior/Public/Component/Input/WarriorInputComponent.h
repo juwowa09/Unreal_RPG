@@ -51,12 +51,14 @@ void UWarriorInputComponent::BindAbilityInputAction(const UDataAsset_InputConfig
 	{
 		if (!AbilityInputActionConfig.IsValid()) continue;
 
+		// 콜백함수의 정보 (매개변수 등)
 		BindAction(AbilityInputActionConfig.InputAction,
 			ETriggerEvent::Started,
 			ContextObject,
 			InputPressedFunc,
 			AbilityInputActionConfig.InputTag);
-		
+
+		// 콜백함수의 정보 (매개변수 등)
 		BindAction(AbilityInputActionConfig.InputAction,
 			ETriggerEvent::Completed,
 			ContextObject,

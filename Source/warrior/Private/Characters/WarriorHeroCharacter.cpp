@@ -15,6 +15,7 @@
 #include "DataAssets/StartUpData/DataAsset_HeroStartUpData.h"
 #include "Component/Combat/HeroCombatComponent.h"
 #include "Component/UI/HeroUIComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 #include "WarriorDebugHelper.h"
 
@@ -99,6 +100,7 @@ void AWarriorHeroCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	UWarriorInputComponent* WarriorInputComponent = CastChecked<UWarriorInputComponent>(PlayerInputComponent);
 
 	// 캐릭터 움직임 인풋 바인딩
+	// 태그에 매핑된 인풋 액션을 찾아서 Call Back 함수의 매개변수로 넣어준다
 	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset,
 		WarriorGamePlayTags::InputTag_Move,
 		ETriggerEvent::Triggered,
@@ -113,12 +115,14 @@ void AWarriorHeroCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	&ThisClass::Input_Look);
 
 	// Target Lock Input Switch Bind
+	// 태그에 매핑된 인풋 액션을 찾아서 Call Back 함수의 매개변수로 넣어준다
 	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset,
 		WarriorGamePlayTags::InputTag_SwitchTarget,
 		ETriggerEvent::Triggered,
 		this,
 		&ThisClass::Input_SwitchTargetTriggered);
 	
+	// 태그에 매핑된 인풋 액션을 찾아서 Call Back 함수의 매개변수로 넣어준다
 	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset,
 		WarriorGamePlayTags::InputTag_SwitchTarget,
 		ETriggerEvent::Completed,
@@ -176,10 +180,21 @@ void AWarriorHeroCharacter::Input_Look(const FInputActionValue& InputActionValue
 
 void AWarriorHeroCharacter::Input_SwitchTargetTriggered(const FInputActionValue& InputActionValue)
 {
+	SwitchDirection = InputActionValue.Get<FVector2D>();
 }
 
 void AWarriorHeroCharacter::Input_SwitchTargetCompleted(const FInputActionValue& InputActionValue)
 {
+	FGameplayEventData Data;
+	
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+		this,
+		SwitchDirection.X > 0.f ? WarriorGamePlayTags::Player_Event_SwitchTarget_Right : WarriorGamePlayTags::Player_Event_SwitchTarget_Left,
+		Data
+		);
+
+	
+	// Debug::Print(TEXT("SwitchDirection: ") + SwitchDirection.ToString());
 }
 
 void AWarriorHeroCharacter::Input_AbilityInputPressed(FGameplayTag InInputTag)
