@@ -24,7 +24,7 @@ void UDataAsset_StartUpDataBase::GiveToAbilitySystemComponent(UWarriorAbilitySys
 			//	CDO = class default object
 			UGameplayEffect* EffectCDO = EffectClass->GetDefaultObject<UGameplayEffect>();
 
-			// CDO 를 바로 적용시 엔진 내부에서 Spec Handle 자동 생성후 적용
+			// CDO 를 바로 적용시 엔진 내부에서 Spec Handle 자동 생성후, 액터의 ASC 가 가지고 있는 Attribute Set 에  적용
 			InASCToGive->ApplyGameplayEffectToSelf(
 				EffectCDO,
 				ApplyLevel,
