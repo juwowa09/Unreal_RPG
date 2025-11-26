@@ -5,6 +5,11 @@
 #include "Components/BoxComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "NiagaraComponent.h"
+#include "WarriorFunctionLibrary.h"
+#include "WarriorGamePlayTags.h"
+#include "AbilitySystemBlueprintLibrary.h"
+
+#include "WarriorDebugHelper.h"
 
 AWarriorProjectileBase::AWarriorProjectileBase()
 {
@@ -19,6 +24,10 @@ AWarriorProjectileBase::AWarriorProjectileBase()
 	ProjectileCollisionBox->SetCollisionResponseToChannel(ECC_Pawn,ECR_Block);
 	ProjectileCollisionBox->SetCollisionResponseToChannel(ECC_WorldDynamic,ECR_Block);
 	ProjectileCollisionBox->SetCollisionResponseToChannel(ECC_WorldStatic,ECR_Block);
+
+	// Box Delegate 등록
+	ProjectileCollisionBox->OnComponentHit.AddUniqueDynamic(this, &ThisClass::OnProjectileHit);
+	ProjectileCollisionBox->OnComponentBeginOverlap.AddUniqueDynamic(this, &ThisClass::OnProjectileBeginOverlap);
 
 	// 초기화
 	ProjectileNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ProjectileNiagaraComponent"));
@@ -39,6 +48,62 @@ AWarriorProjectileBase::AWarriorProjectileBase()
 void AWarriorProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (ProjectileDamagePolicy == EProjectileDamagePolicy::OnBeginOverlap)
+	{
+		ProjectileCollisionBox->SetCollisionResponseToChannel(ECC_Pawn,ECR_Overlap);
+	}
 }
+
+// OnHit 델리게이트에 등록할 함수
+void AWarriorProjectileBase::OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	BP_OnSpawnProjectileHitFX(Hit.ImpactPoint);
+	
+	APawn* HitPawn = Cast<APawn>(OtherActor);
+
+	// Hostile 인지 체크
+	if (!HitPawn || !UWarriorFunctionLibrary::IsTargetPawnHostile(GetInstigator(),HitPawn))
+	{
+		Destroy();
+		return;
+	}
+
+	bool bIsValidBlock = false;
+	const bool bIsPlayerBlocking = UWarriorFunctionLibrary::NativeDoesActorHaveTag(HitPawn, WarriorGamePlayTags::Player_Status_Blocking);
+
+	if (bIsPlayerBlocking)
+	{
+		// 유효한 블럭방향인지 확인
+		bIsValidBlock = UWarriorFunctionLibrary::IsValidBlock(this, HitPawn);
+	}
+
+	FGameplayEventData Data;
+	Data.Instigator = this;
+	Data.Target = HitPawn;
+
+	if (bIsValidBlock)
+	{
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+			HitPawn,
+			WarriorGamePlayTags::Player_Event_SuccessfulBlock,
+			Data
+			);
+	}
+	else
+	{
+		// Apply Projectile Damage
+	}
+
+	Destroy();
+}
+
+// Overlap 델리게이트에 등록할 함수
+void AWarriorProjectileBase::OnProjectileBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+}
+
+
 

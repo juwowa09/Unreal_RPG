@@ -146,7 +146,7 @@ bool UWarriorFunctionLibrary::IsValidBlock(AActor* InAttacker, AActor* InDefende
 	// const FString DebugString = FString::Printf(TEXT("dot result: %f %s"), DotResult, DotResult< 0.f? TEXT("Valid") : TEXT("InValid"));
 	// Debug::Print(DebugString,DotResult < -0.1f ? FColor::Green : FColor::Red);
 	
-	// 두 벡터가 서로 반대방향이라면 음수 (서로 마주보면)
+	// 두 벡터가 서로 반대방향이라면 유효한 블럭 - 음수 (서로 마주보면)
 	return DotResult < -0.1f;
 }
 
