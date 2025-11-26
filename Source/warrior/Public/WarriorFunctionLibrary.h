@@ -57,4 +57,7 @@ public:
 	// 두 액터가 서로 바라보고있는지 아닌지 판별
 	UFUNCTION(BlueprintPure, Category="Warrior|FunctionLibrary")
 	static bool IsValidBlock(AActor* InAttacker, AActor* InDefender);
+
+	UFUNCTION(BlueprintCallable, Category="Warrior|FunctionLibrary")
+	static bool ApplyGameplayEffectSpecHandleToTargetActor(AActor* InInstigator, AActor* InTargetActor, const FGameplayEffectSpecHandle& InSpecHandle);
 };

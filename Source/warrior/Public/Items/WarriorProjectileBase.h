@@ -4,12 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameplayEffectTypes.h"
 
 #include "WarriorProjectileBase.generated.h"
 
 class UBoxComponent;
 class UNiagaraComponent;
 class UProjectileMovementComponent;
+struct FGameplayEventData;
 
 UENUM(BlueprintType)
 enum class EProjectileDamagePolicy : uint8
@@ -43,6 +45,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Projectile")
 	EProjectileDamagePolicy ProjectileDamagePolicy = EProjectileDamagePolicy::OnHit;
 
+	// ExposeOnSpawn = "true" 의 의미는 해당 속성을 Actor가 스폰될 때 초기값으로 설정할 수 있도록 노출하겠다
+	UPROPERTY(BlueprintReadOnly, Category="Projectile", meta = (ExposeOnSpawn = "true"))
+	FGameplayEffectSpecHandle ProjectileDamageEffectSpecHandle;
+	
 	// 델리게이트에 등록할 함수
 	UFUNCTION()
 	virtual void OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
@@ -50,7 +56,10 @@ protected:
 	UFUNCTION()
 	virtual void OnProjectileBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
 
-	// 사운드 효과음 재생할 함수 블루프린트에서 구현함
+	// 사운드 효과음 재생할 함수 블루프린트에서 구현
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Spawn Projectile Hit FX"))
 	void BP_OnSpawnProjectileHitFX(const FVector& HitLocation);
+
+private:
+	void HandleApplyProjectileDamage(APawn* InHitPawn, const FGameplayEventData& InPayload);
 };
