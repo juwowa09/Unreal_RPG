@@ -21,7 +21,10 @@ void UEnemyCombatComponent::OnHitTargetActor(AActor* HitActor)
 	// Hit 당한 액터가 Blocking 태그를 가지는 중인지 체크
 	const bool bIsPlayerBlocking = UWarriorFunctionLibrary::NativeDoesActorHaveTag(HitActor,
 		WarriorGamePlayTags::Player_Status_Blocking);
-	const bool bIsMyAttackUnblockable = false;
+	
+	// 블럭할 수 없음을 나타냄
+	const bool bIsMyAttackUnblockable = UWarriorFunctionLibrary::NativeDoesActorHaveTag(GetOwningPawn(),
+			WarriorGamePlayTags::Enemy_Status_UnBlockable);
 
 	if (bIsPlayerBlocking && !bIsMyAttackUnblockable)
 	{
