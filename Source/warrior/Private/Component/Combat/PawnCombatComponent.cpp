@@ -54,23 +54,14 @@ void UPawnCombatComponent::ToggleWeaponCollisioin(bool bShouldEnable, EToggleDam
 {
 	if (ToggleDamageType == EToggleDamageType::CurrentEquippedWeapon)
 	{
-		AWarriorWeaponBase* WeaponToToggle = GetCharacterCurrentEquippedWeapon();
-
-		check(WeaponToToggle);
-
-		if (bShouldEnable)
-		{
-			WeaponToToggle->GetWeaponCollisionBox()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		}
-		else
-		{
-			WeaponToToggle->GetWeaponCollisionBox()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			
-			OverlappedActors.Empty();	// 공격 한 횟수 지나면 초기화(다시 맞을수 있도록)
-		}
+		// 무기 Collision Toggle 수행
+		ToggleCurrentEquippedWeaponCollision(bShouldEnable);
 	}
-
-	// TODO: Handle body collision box
+	else
+	{
+		// body Collision Toggle 수행
+		ToggleBodyCollisionBoxCollision(bShouldEnable,ToggleDamageType);
+	}
 }
 
 void UPawnCombatComponent::OnHitTargetActor(AActor* HitActor)
@@ -81,4 +72,28 @@ void UPawnCombatComponent::OnHitTargetActor(AActor* HitActor)
 void UPawnCombatComponent::OnWeaponPulledFromTargetActor(AActor* InteractedActor)
 {
 	
+}
+
+// 현재 장착중인 무기의 collision을 Toggle 하는 함수
+void UPawnCombatComponent::ToggleCurrentEquippedWeaponCollision(bool bShouldEnable)
+{
+	AWarriorWeaponBase* WeaponToToggle = GetCharacterCurrentEquippedWeapon();
+
+	check(WeaponToToggle);
+
+	if (bShouldEnable)
+	{
+		WeaponToToggle->GetWeaponCollisionBox()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	}
+	else
+	{
+		WeaponToToggle->GetWeaponCollisionBox()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			
+		OverlappedActors.Empty();	// 공격 한 횟수 지나면 초기화(다시 맞을수 있도록)
+	}
+}
+
+// 현재 Left, Right Hand의 Collision Toggle 함수
+void UPawnCombatComponent::ToggleBodyCollisionBoxCollision(bool bShouldEnable, EToggleDamageType ToggleDamageType)
+{
 }

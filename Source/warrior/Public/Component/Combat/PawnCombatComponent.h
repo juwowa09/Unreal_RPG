@@ -13,6 +13,7 @@ class AWarriorWeaponBase;
 UENUM(BlueprintType)
 enum class EToggleDamageType : uint8
 {
+	// 데미지 줄 수 있는 타입
 	CurrentEquippedWeapon,
 	LeftHand,
 	RightHand
@@ -52,6 +53,11 @@ public:
 	virtual void OnWeaponPulledFromTargetActor(AActor* InteractedActor);
 
 protected:
+	// 현재 장착중인 무기의 collision을 Toggle 하는 함수
+	virtual void ToggleCurrentEquippedWeaponCollision(bool bShouldEnable);
+	// 현재 Left, Right Hand의 Collision Toggle
+	virtual void ToggleBodyCollisionBoxCollision(bool bShouldEnable, EToggleDamageType ToggleDamageType);
+	
 	TArray<AActor*> OverlappedActors;	// 중복처리 하지 않기 위한 배열 변수
 	
 private:
