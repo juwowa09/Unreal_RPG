@@ -14,6 +14,8 @@ void UEnemyCombatComponent::OnHitTargetActor(AActor* HitActor)
 {
 	// 하나만 적용하기 위해 (중복 적용 X)
 	if (OverlappedActors.Contains(HitActor)) return;
+	if (UWarriorFunctionLibrary::NativeDoesActorHaveTag(HitActor,
+			WarriorGamePlayTags::Player_Status_Rolling)) return;
 	
 	OverlappedActors.AddUnique(HitActor);
 
