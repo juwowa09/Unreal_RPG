@@ -11,7 +11,7 @@
 
 UAbilityTask_WaitSpawnEnemies* UAbilityTask_WaitSpawnEnemies::WaitSpawnEnemies(UGameplayAbility* OwningAbility,
                                                                                FGameplayTag EventTag, TSoftClassPtr<AWarriorEnemyCharacter> SoftEnemyClassToSpawn, int32 NumToSpawn,
-                                                                               const FVector& SpawnOrigin, float RandomSpawnRadius, const FRotator& SpawnRotation)
+                                                                               const FVector& SpawnOrigin, float RandomSpawnRadius)
 {
 	// Task 가 어떤 Ability 의 Task 인지 초기화
 	UAbilityTask_WaitSpawnEnemies* Node = NewAbilityTask<UAbilityTask_WaitSpawnEnemies>(OwningAbility);
@@ -19,7 +19,6 @@ UAbilityTask_WaitSpawnEnemies* UAbilityTask_WaitSpawnEnemies::WaitSpawnEnemies(U
 	Node->CachedSoftEnemyClassToSpawn = SoftEnemyClassToSpawn;
 	Node->CachedSpawnOrigin = SpawnOrigin;
 	Node->CachedRandomSpawnRadius = RandomSpawnRadius;
-	Node->CachedSpawnRotation = SpawnRotation;
 	Node->CachedNumToSpawn = NumToSpawn;
 
 	return Node;
@@ -102,10 +101,12 @@ void UAbilityTask_WaitSpawnEnemies::OnEnemyClassLoaded()
 		// 네비게이션 안에서 랜덤위치 찾기, Params = 중심위치, 결과, 위치로부터 반경
 		UNavigationSystemV1::K2_GetRandomReachablePointInRadius(this, CachedSpawnOrigin, RandomLocation, CachedRandomSpawnRadius);
 
-		RandomLocation += FVector(0.f,0.f,150.f);
+		RandomLocation += FVector(0.f,0.f,300.f);
+
+		const FRotator SpawnFacingRotation = AbilitySystemComponent->GetAvatarActor()->GetActorForwardVector().ToOrientationRotator();
 
 		// 스폰 실행, 위치, 회전 값, 스폰 충돌 조건
-		AWarriorEnemyCharacter* SpawnedEnemy = World->SpawnActor<AWarriorEnemyCharacter>(LoadedClass, RandomLocation, CachedSpawnRotation, SpawnParam);
+		AWarriorEnemyCharacter* SpawnedEnemy = World->SpawnActor<AWarriorEnemyCharacter>(LoadedClass, RandomLocation, SpawnFacingRotation, SpawnParam);
 
 		if (SpawnedEnemy)
 		{
