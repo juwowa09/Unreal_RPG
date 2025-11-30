@@ -101,7 +101,7 @@ void UAbilityTask_WaitSpawnEnemies::OnEnemyClassLoaded()
 		// 네비게이션 안에서 랜덤위치 찾기, Params = 중심위치, 결과, 위치로부터 반경
 		UNavigationSystemV1::K2_GetRandomReachablePointInRadius(this, CachedSpawnOrigin, RandomLocation, CachedRandomSpawnRadius);
 
-		RandomLocation += FVector(0.f,0.f,300.f);
+		RandomLocation += FVector(0.f,0.f,150.f);
 
 		const FRotator SpawnFacingRotation = AbilitySystemComponent->GetAvatarActor()->GetActorForwardVector().ToOrientationRotator();
 
