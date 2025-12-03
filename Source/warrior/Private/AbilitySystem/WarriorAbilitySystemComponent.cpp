@@ -2,18 +2,21 @@
 
 
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "WarriorTypes/WarriorStructTypes.h"
 #include "AbilitySystem/Abilities/WarriorHeroGameplayAbility.h"
 #include "WarriorGamePlayTags.h"
 
 #include "WarriorDebugHelper.h"
+#include "Chaos/Deformable/MuscleActivationConstraints.h"
 
 void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& InInputTag)
 {
 	if (!InInputTag.IsValid()) return;
 
 	// 액티브 가능한 어빌리티중에(등록된 어빌리티)
-	for (const FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
+	for (FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
 	{
 		// 어빌리티 태그가 없으면 다음 어빌리티로
 		if (!AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InInputTag)) continue;
@@ -34,7 +37,19 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 		else
 		{
 			// 토글이 아닌 어빌리티 기능 활성화
-			TryActivateAbility(AbilitySpec.Handle);
+			if (AbilitySpec.IsActive())
+			{
+				FGameplayEventData Data;
+				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+					GetAvatarActor(),
+					WarriorGamePlayTags::Player_Event_Combo,
+					Data
+					);
+			}
+			else
+			{
+				TryActivateAbility(AbilitySpec.Handle);
+			}
 		}
 	}
 }

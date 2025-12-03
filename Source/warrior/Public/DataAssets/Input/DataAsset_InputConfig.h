@@ -21,7 +21,7 @@ public:
 
 	//실제 입력에 따른 액션
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
-	UInputAction* InputAction;
+	UInputAction* InputAction = nullptr;
 
 	bool IsValid() const
 	{
