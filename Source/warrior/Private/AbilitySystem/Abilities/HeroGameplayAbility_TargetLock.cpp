@@ -25,8 +25,6 @@ void UHeroGameplayAbility_TargetLock::ActivateAbility(const FGameplayAbilitySpec
 {
 	// 어빌리티 활성시 Target
 	TryLockOnTarget();
-	InitTargetLockMovement();
-	InitTargetLockMappingContext();
 	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
@@ -43,7 +41,7 @@ void UHeroGameplayAbility_TargetLock::EndAbility(const FGameplayAbilitySpecHandl
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
-// Tick Task 를 통해 계속해서 Widget 업데이트 하는 함수
+// Tick Task 를 통해 계속해서 Widget 업데이트, 카메라 고정 하는 함수
 void UHeroGameplayAbility_TargetLock::OnTargetLockTick(float DeltaTime)
 {
 	if (!CurrentLockedActor ||
@@ -62,7 +60,7 @@ void UHeroGameplayAbility_TargetLock::OnTargetLockTick(float DeltaTime)
 	// && !UWarriorFunctionLibrary::NativeDoesActorHaveTag(GetHeroCharacterFromActorInfo(), WarriorGamePlayTags::Player_Status_Blocking);
 
 
-	// 현재 캐릭터 방향 고정 회전값
+	// 현재 캐릭터 - Target 방향 회전값
 	FRotator LookAtRot = UKismetMathLibrary::FindLookAtRotation(
 		GetHeroCharacterFromActorInfo()->GetActorLocation(),
 		CurrentLockedActor->GetActorLocation()
@@ -81,6 +79,20 @@ void UHeroGameplayAbility_TargetLock::OnTargetLockTick(float DeltaTime)
 	{
 		GetHeroCharacterFromActorInfo()->SetActorRotation(FRotator(0.f,TargetRot.Yaw,0.f));
 	}
+}
+
+// Tick Task 를 통해 계속해서 Widget 업데이트, 카메라 고정 하는 함수
+void UHeroGameplayAbility_TargetLock::OnTargetLockTickNoCurrent(float DeltaTime)
+{
+	FRotator LookAtRot = GetHeroCharacterFromActorInfo()->GetActorRotation();
+	const FRotator CurrentControlRot = GetHeroControllerFromActorInfo()->GetControlRotation();
+	if (LookAtRot.Equals(CurrentControlRot,10.f))
+	{
+		CancelTargetLockAbility();
+		return;
+	}
+	const FRotator TargetRot = FMath::RInterpTo(CurrentControlRot,LookAtRot,DeltaTime, TargetLockRotationInterpSpeed);
+	GetHeroControllerFromActorInfo()->SetControlRotation(TargetRot);
 }
 
 void UHeroGameplayAbility_TargetLock::SwitchTarget(const FGameplayTag& InSwitchDirectionTag)
@@ -116,7 +128,7 @@ void UHeroGameplayAbility_TargetLock::TryLockOnTarget()
 	// 비어있으면 Target 할 게 없으므로 리턴
 	if (AvailableActorsToLock.IsEmpty())
 	{
-		CancelTargetLockAbility();
+		// CancelTargetLockAbility();
 		return;
 	}
 
@@ -130,6 +142,10 @@ void UHeroGameplayAbility_TargetLock::TryLockOnTarget()
 
 		// 위젯 위치 설정
 		SetTargetLockWidgetPosition();
+
+		// 캐릭터 movement 설정, Mapping Context 추가
+		InitTargetLockMovement();
+		InitTargetLockMappingContext();
 	}
 	else
 	{

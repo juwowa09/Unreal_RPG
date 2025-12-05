@@ -13,7 +13,7 @@
 
 UWarriorAbilitySystemComponent* UWarriorFunctionLibrary::NativeGetWarriorASCFromActor(AActor* InActor)
 {
-	check(InActor);
+	checkf(InActor, TEXT("Null Actor"));
 	// 액터가 IAbilitySystemInterface 상속했으면 그 액터가 가지는 ASC 리턴, 아니면 nullptr 리턴
 	return CastChecked<UWarriorAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InActor));
 	/* CastChecked 는 실패시 Crash 발생

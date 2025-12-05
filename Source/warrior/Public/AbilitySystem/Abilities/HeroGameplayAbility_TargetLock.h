@@ -26,7 +26,13 @@ protected:
 	void OnTargetLockTick(float DeltaTime);
 	
 	UFUNCTION(BlueprintCallable)
+	void OnTargetLockTickNoCurrent(float DeltaTime);
+	
+	UFUNCTION(BlueprintCallable)
 	void SwitchTarget(const FGameplayTag& InSwitchDirectionTag);
+	
+	UPROPERTY(BlueprintReadOnly)
+	AActor* CurrentLockedActor;
 
 private:
 	// Lock 실행하는 함수
@@ -86,9 +92,6 @@ private:
 	// Lock 가능한 액터들 저장
 	UPROPERTY()
 	TArray<AActor*> AvailableActorsToLock;
-
-	UPROPERTY()
-	AActor* CurrentLockedActor;
 	
 	UPROPERTY()
 	UWarriorWidgetBase* DrawnTargetLockWidget;
