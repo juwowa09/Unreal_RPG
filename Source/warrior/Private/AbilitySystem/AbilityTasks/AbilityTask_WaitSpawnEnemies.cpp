@@ -40,7 +40,7 @@ void UAbilityTask_WaitSpawnEnemies::Activate()
 {
 	// ASC 에 태그-델리게이트로 등록된 쌍을 가져오는 함수 (등록된 모든 콜백함수 목록)
 	// GenericGameplayEventCallbacks - TMap 형태
-	// ASC에 어떤 Event Tag가 들어오면, GenericGameplayEventCallbacks 안에 등록된 콜백함수들을 모두 실행
+	// ASC에 등록한 Event Tag가 들어오면, GenericGameplayEventCallbacks 안에 등록된 콜백함수들을 모두 실행
 	FGameplayEventMulticastDelegate& Delegate = AbilitySystemComponent->GenericGameplayEventCallbacks.FindOrAdd(CachedEventTag);
 
 	// 델리게이트에 함수 추가, 나중에 삭제하기 위해 변수 저장

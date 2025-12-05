@@ -37,19 +37,19 @@ void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& I
 		else
 		{
 			// 토글이 아닌 어빌리티 기능 활성화
-			if (AbilitySpec.IsActive())
-			{
-				FGameplayEventData Data;
-				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
-					GetAvatarActor(),
-					WarriorGamePlayTags::Player_Event_Combo,
-					Data
-					);
-			}
-			else
-			{
+			// if (AbilitySpec.IsActive())
+			// {
+			// 	FGameplayEventData Data;
+			// 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+			// 		GetAvatarActor(),
+			// 		WarriorGamePlayTags::Player_Event_Combo,
+			// 		Data
+			// 		);
+			// }
+			// else
+			// {
 				TryActivateAbility(AbilitySpec.Handle);
-			}
+			// }
 		}
 	}
 }
