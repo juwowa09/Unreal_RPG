@@ -56,6 +56,8 @@ FGameplayEffectSpecHandle UWarriorHeroGameplayAbility::MakeHeroDamageEffectSpecH
 		WarriorGamePlayTags::Shared_SetByCaller_BaseDamage,
 		InWeaponBaseDamage
 	);
+
+	// 태그(키)와 데미지값을 매핑
 	if (InCurrentAttackTypeTag.IsValid())
 	{
 		// 공격 타입별로 다른 데미지를 주기 위해서 현재 공격 태그를 입력함. 

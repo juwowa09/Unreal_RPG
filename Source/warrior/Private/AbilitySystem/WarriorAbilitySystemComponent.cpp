@@ -72,11 +72,14 @@ void UWarriorAbilitySystemComponent::OnAbilityInputReleased(const FGameplayTag& 
 }
 
 void UWarriorAbilitySystemComponent::GrantHeroWeaponAbility(
-	const TArray<FWarriorHeroAbilitySet>& InDefaultWeaponAbilities, int32 ApplyLevel,
+	const TArray<FWarriorHeroAbilitySet>& InDefaultWeaponAbilities,
+	const TArray<FWarriorHeroSpecialAbilitySet>& InSpecialWeaponAbilitieses,
+	int32 ApplyLevel,
 	TArray<FGameplayAbilitySpecHandle>& OutGrantedAbilitySpecHandles)
 {
 	if (InDefaultWeaponAbilities.IsEmpty()) return;
 
+	// Default Ability 등록
 	for (const FWarriorHeroAbilitySet& AbilitySet : InDefaultWeaponAbilities)
 	{
 		if (!AbilitySet.IsValid()) continue;
@@ -84,6 +87,20 @@ void UWarriorAbilitySystemComponent::GrantHeroWeaponAbility(
 		AbilitySpec.SourceObject = GetAvatarActor();
 		AbilitySpec.Level = ApplyLevel;
 		AbilitySpec.GetDynamicSpecSourceTags().AddTag(AbilitySet.InputTag);
+		
+		// Debug::Print(*GetNameSafe(AbilitySet.AbilityToGrant));
+
+		OutGrantedAbilitySpecHandles.AddUnique(GiveAbility(AbilitySpec));
+	}
+
+	// Special Ability 등록
+	for (const FWarriorHeroSpecialAbilitySet& SpecialAbilitySet : InSpecialWeaponAbilitieses)
+	{
+		if (!SpecialAbilitySet.IsValid()) continue;
+		FGameplayAbilitySpec AbilitySpec(SpecialAbilitySet.AbilityToGrant);
+		AbilitySpec.SourceObject = GetAvatarActor();
+		AbilitySpec.Level = ApplyLevel;
+		AbilitySpec.GetDynamicSpecSourceTags().AddTag(SpecialAbilitySet.InputTag);
 		
 		// Debug::Print(*GetNameSafe(AbilitySet.AbilityToGrant));
 

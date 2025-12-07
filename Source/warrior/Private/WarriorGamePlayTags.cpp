@@ -38,6 +38,9 @@ namespace WarriorGamePlayTags
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_SpecialAbility_Light,"Player.Ability.SpecialAbility.Light");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_SpecialAbility_Heavy,"Player.Ability.SpecialAbility.Heavy");
 	
+	UE_DEFINE_GAMEPLAY_TAG(Player_Cooldown_SpecialWeaponAbility_Light,"Player.Cooldown.SpecialWeaponAbility.Light");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Cooldown_SpecialWeaponAbility_Heavy,"Player.Cooldown.SpecialWeaponAbility.Heavy");
+	
 	UE_DEFINE_GAMEPLAY_TAG(Player_Weapon_Axe,"Player.Weapon.Axe");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Weapon_Katana,"Player.Weapon.Katana");
 	

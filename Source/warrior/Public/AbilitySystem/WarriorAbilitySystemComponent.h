@@ -25,6 +25,7 @@ public:
 	// 무기에 등록된 어빌리티들 등록하는 함수
 	UFUNCTION(BlueprintCallable, Category="Warrior|Ability", meta = (ApplyLevel = "1"))
 	void GrantHeroWeaponAbility(const TArray<FWarriorHeroAbilitySet>& InDefaultWeaponAbilities,
+		const TArray<FWarriorHeroSpecialAbilitySet>& InSpecialWeaponAbilitieses,
 		int32 ApplyLevel,
 		TArray<FGameplayAbilitySpecHandle>& OutGrantedAbilitySpecHandles);
 
