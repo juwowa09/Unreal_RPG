@@ -4,6 +4,7 @@
 #include "Widgets/WarriorWidgetBase.h"
 #include "Interfaces/PawnUIInterface.h"
 
+// 위젯이 초기화 될 때 Player 라면, UIComponent 에 바인딩 될 수 있도록 함
 void UWarriorWidgetBase::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();

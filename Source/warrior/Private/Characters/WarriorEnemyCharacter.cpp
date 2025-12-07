@@ -72,6 +72,7 @@ void AWarriorEnemyCharacter::BeginPlay()
 	// 현재 그냥 Widget Component 이기 때문에 캐스팅 필요
 	if (UWarriorWidgetBase* HealthWidget = Cast<UWarriorWidgetBase>(EnemyHealthWidgetComponent->GetUserWidgetObject()))
 	{
+		// 적 캐릭터 생성 시 위젯도 생성 + 초기화
 		HealthWidget->InitEnemyCreatedWidget(this);
 	}
 }
