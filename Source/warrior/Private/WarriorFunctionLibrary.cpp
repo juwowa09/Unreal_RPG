@@ -8,6 +8,7 @@
 #include "GenericTeamAgentInterface.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "WarriorGamePlayTags.h"
+#include "WarriorTypes/WarriorCountDownAction.h"
 
 #include "WarriorDebugHelper.h"
 
@@ -160,5 +161,48 @@ bool UWarriorFunctionLibrary::ApplyGameplayEffectSpecHandleToTargetActor(AActor*
 	FActiveGameplayEffectHandle ActiveGameplayEffectHandle = SourceASC->ApplyGameplayEffectSpecToTarget(*InSpecHandle.Data,TargetASC);
 
 	return ActiveGameplayEffectHandle.WasSuccessfullyApplied();
+}
+
+void UWarriorFunctionLibrary::CountDown(const UObject* WorldContextObject, float TotalTime, float UpdateInterval,
+	float& OutRemainingTime, EWarriorCountDownActionInput CountDownInput,
+	UPARAM(DisplayName="Output")EWarriorCountDownActionOutput& CountDownOutput, FLatentActionInfo LatentInfo)
+{
+	UWorld* World = nullptr;
+
+	if (GEngine)
+	{
+		// 월드 받아오기
+		World = GEngine->GetWorldFromContextObject(WorldContextObject,EGetWorldErrorMode::LogAndReturnNull);
+	}
+	
+	if (!World) return ;
+
+	// 월드의 LatentManager 받아오기
+	FLatentActionManager& LatentActionManager = World->GetLatentActionManager();
+
+	// 우리가 찾을 Latent Class 할당해서 가져오기 (Callback Target, UUID)
+	FWarriorCountDownAction* FoundAction = LatentActionManager.FindExistingAction<FWarriorCountDownAction>(LatentInfo.CallbackTarget, LatentInfo.UUID);
+
+	if (CountDownInput == EWarriorCountDownActionInput::Start)
+	{
+		// 액션 시작하기
+		if (!FoundAction)
+		{
+			// LatentManager 에 만들 Action 등록
+			LatentActionManager.AddNewAction(
+				LatentInfo.CallbackTarget,
+				LatentInfo.UUID,
+				new FWarriorCountDownAction(TotalTime,UpdateInterval,OutRemainingTime,CountDownOutput,LatentInfo)
+			);
+		}
+	}
+	if (CountDownInput == EWarriorCountDownActionInput::Cancel)
+	{
+		if (FoundAction)
+		{
+			// 액션 캔슬하기
+			FoundAction->CancelAction();
+		}
+	}
 }
 
