@@ -61,7 +61,8 @@ public:
 	// Effect Spec을 만들어서 Target에 적용하는 함수
 	UFUNCTION(BlueprintCallable, Category="Warrior|FunctionLibrary")
 	static bool ApplyGameplayEffectSpecHandleToTargetActor(AActor* InInstigator, AActor* InTargetActor, const FGameplayEffectSpecHandle& InSpecHandle);
-	
+
+	// LatentAction 을 만들 함수
 	UFUNCTION(BlueprintCallable, Category="Warrior|FunctionLibrary", meta = (Latent, WorldContext="WorldContextObject", LatentInfo="LatentInfo",ExpandEnumAsExecs="CountDownInput|CountDownOutput",TotalTime="1.0",UpdateInterval="0.1"))
 	static void CountDown(const UObject* WorldContextObject, float TotalTime, float UpdateInterval,
 		float& OutRemainingTime,EWarriorCountDownActionInput CountDownInput,

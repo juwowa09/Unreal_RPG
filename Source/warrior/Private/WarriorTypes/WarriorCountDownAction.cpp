@@ -52,7 +52,7 @@ void FWarriorCountDownAction::UpdateOperation(FLatentResponse& Response)
 
 		// 현재 상태를 Output 에 연결
 		CountDownOutput = EWarriorCountDownActionOutput::Updated;
-		// 다음 트리거를 호출함? Output Link를
+		// 다음 트리거를 호출함 Output Link를
 		Response.TriggerLink(ExecutionFunction,OutputLink,CallbackTarget);
 
 		// 주기 다시 0으로 업데이트
