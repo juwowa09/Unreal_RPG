@@ -65,3 +65,24 @@ FGameplayEffectSpecHandle UWarriorHeroGameplayAbility::MakeHeroDamageEffectSpecH
 	}
 	return EffectSpecHandle;
 }
+
+bool UWarriorHeroGameplayAbility::GetAbillityRemainingCooldownByTag(FGameplayTag InCooldownTag,
+	float& TotalCooldownTime, float& RemainingCooldownTime)
+{
+	check(InCooldownTag.IsValid());
+
+	// Effect 중 InCoolDownTag 를 가지고 있는 Effect 모두 가져오는 쿼리를 작성
+	// 쿼리는 태그를 여러개 적용해서 검사가 가능, Single 을 사용하여 하나만 검사
+	FGameplayEffectQuery CooldownQuery = FGameplayEffectQuery::MakeQuery_MatchAnyOwningTags(InCooldownTag.GetSingleTagContainer());
+
+	// ASC에 현재 활성된 Effect 를 만들어둔 쿼리 적용해서 실제로 모두 가져온다
+	TArray<TPair<float,float>> TimeRemainingAndDuration = GetAbilitySystemComponentFromActorInfo()->GetActiveEffectsTimeRemainingAndDuration(CooldownQuery);
+
+	if (!TimeRemainingAndDuration.IsEmpty())
+	{
+		// 키 밸류로 키는 남은시간, 밸류는 토탈 시간
+		RemainingCooldownTime = TimeRemainingAndDuration[0].Key;
+		TotalCooldownTime = TimeRemainingAndDuration[0].Value;
+	}
+	return RemainingCooldownTime > 0.f;
+}
