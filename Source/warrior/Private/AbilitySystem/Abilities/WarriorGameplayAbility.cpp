@@ -6,6 +6,8 @@
 #include "Component/Combat/PawnCombatComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemGlobals.h"
+#include "WarriorFunctionLibrary.h"
+#include "WarriorGamePlayTags.h"
 
 // Info -> 스킬사용의 주체, Spec -> 스킬의 주요 정보를 가지는 구조
 void UWarriorGameplayAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo,
@@ -147,7 +149,7 @@ FActiveGameplayEffectHandle UWarriorGameplayAbility::NativeApplyEffectSpecHandle
 
 	check(TargetASC && InSpecHandle.IsValid());
 
-	// 플레이어 ASC 가 실제로 Target ASC에 Effect 를 적용시키는 함수
+	// 플레이어 ASC 가 실제로 Target ASC에 Effect 를 적용시키고 Active 중인 EffectSpecHandle을 리턴
 	return GetWarriorAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(
 		*InSpecHandle.Data,
 		TargetASC
@@ -161,4 +163,40 @@ FActiveGameplayEffectHandle UWarriorGameplayAbility::BP_ApplyEffectSpecHandleToT
 	OutSuccessType = ActiveGameplayEffectHandle.WasSuccessfullyApplied() ? EWarriorSuccessType::Successful : EWarriorSuccessType::Failed;
 
 	return ActiveGameplayEffectHandle;
+}
+
+void UWarriorGameplayAbility::ApplyGameplayEffectSpecHandleToHitResults(const FGameplayEffectSpecHandle& InSpecHandle,
+	const TArray<FHitResult>& InHitResults)
+{
+	if (InHitResults.IsEmpty())
+		return;
+
+	// 현재 어빌리티를 가지고 있는 Pawn
+	APawn* OwningPawn = Cast<APawn>(GetAvatarActorFromActorInfo());
+
+	// 모든 Hit Target 에 대해서 수행
+	for (const FHitResult& Hit : InHitResults)
+	{
+		if (APawn* HitPawn = Cast<APawn>(Hit.GetActor()))
+		{
+			// Hit Pawn 이 적일 경우
+			if (UWarriorFunctionLibrary::IsTargetPawnHostile(OwningPawn, HitPawn))
+			{
+				FActiveGameplayEffectHandle ActiveGameplayEffectHandle = NativeApplyEffectSpecHandleToTarget(HitPawn, InSpecHandle);
+
+				// 유요하게 적용 됐을 경우
+				if (ActiveGameplayEffectHandle.WasSuccessfullyApplied())
+				{
+					FGameplayEventData Data;
+					Data.Instigator = OwningPawn;
+					Data.Target = HitPawn;
+					UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+						HitPawn,
+						WarriorGamePlayTags::Shared_Event_HitReact,
+						Data
+						);
+				}
+			}
+		}
+	}
 }
