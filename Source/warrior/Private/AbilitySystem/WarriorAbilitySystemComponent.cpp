@@ -7,9 +7,9 @@
 #include "WarriorTypes/WarriorStructTypes.h"
 #include "AbilitySystem/Abilities/WarriorHeroGameplayAbility.h"
 #include "WarriorGamePlayTags.h"
+#include "Chaos/Deformable/MuscleActivationConstraints.h"
 
 #include "WarriorDebugHelper.h"
-#include "Chaos/Deformable/MuscleActivationConstraints.h"
 
 void UWarriorAbilitySystemComponent::OnAbilityInputPressed(const FGameplayTag& InInputTag)
 {

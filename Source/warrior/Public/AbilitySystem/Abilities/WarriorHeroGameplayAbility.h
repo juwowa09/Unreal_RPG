@@ -36,7 +36,7 @@ public:
 
 	// ASC 에게 현재 어빌리티의 쿨타임이 얼마나 남았는지 받아오는 함수
 	UFUNCTION(BlueprintCallable, Category = "Warrior|Ability")
-	bool GetAbillityRemainingCooldownByTag(FGameplayTag InCooldownTag, float& TotalCooldownTime, float& RemainingCooldownTime);
+	bool GetAbilityRemainingCooldownByTag(FGameplayTag InCooldownTag, float& TotalCooldownTime, float& RemainingCooldownTime);
 	
 private:
 	TWeakObjectPtr<AWarriorHeroCharacter> CachedWarriorHeroCharacter;
