@@ -2,11 +2,11 @@
 
 
 #include "AbilitySystem/Abilities/HeroGameplayAbility_PickUpStones.h"
-
-#include "WarriorDebugHelper.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Characters/WarriorHeroCharacter.h"
 #include "Items/PickUps/WarriorStoneBase.h"
+
+#include "WarriorDebugHelper.h"
 
 void UHeroGameplayAbility_PickUpStones::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
@@ -55,10 +55,32 @@ void UHeroGameplayAbility_PickUpStones::CollectStones()
 		}
 	}
 
+	// Stones 이 없으면 사라짐
+	if (CollectedStones.IsEmpty())
+	{
+		// 범위 안에 없으면 현재 어빌리티 취소
+		CancelAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true);
+	}
+	
+}
+
+void UHeroGameplayAbility_PickUpStones::ConsumeStones()
+{
 	// 검색할 어빌리티가 없어지면 사라짐
 	if (CollectedStones.IsEmpty())
 	{
 		// 범위 안에 없으면 현재 어빌리티 취소
 		CancelAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true);
+		return;
+	}
+
+	// 한번에 모든 Stone 을 다 소비
+	for (AWarriorStoneBase* CollectedStone : CollectedStones)
+	{
+		if (CollectedStone)
+		{
+			// Stone 을 통해 소비하도록 함
+			CollectedStone->Consume(GetWarriorAbilitySystemComponentFromActorInfo(),GetAbilityLevel());
+		}
 	}
 }
