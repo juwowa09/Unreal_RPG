@@ -129,11 +129,20 @@ void AWarriorHeroCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 		this,
 		&ThisClass::Input_SwitchTargetCompleted);
 
+	// 줍기 인풋과 줍는 함수 바인딩
+	WarriorInputComponent->BindNativeInputAction(InputConfigDataAsset,
+		WarriorGamePlayTags::InputTag_PickUp_Stones,
+		ETriggerEvent::Started,
+		this,
+		&ThisClass::Input_PickUpStonesStarted);
+
 	// Data Asset에 등록된 어빌리티와 Input 바인딩
 	WarriorInputComponent->BindAbilityInputAction(InputConfigDataAsset,
 		this,
 		&ThisClass::Input_AbilityInputPressed,
 		&ThisClass::Input_AbilityInputReleased);
+
+	
 }
 
 void AWarriorHeroCharacter::BeginPlay()
@@ -192,9 +201,20 @@ void AWarriorHeroCharacter::Input_SwitchTargetCompleted(const FInputActionValue&
 		SwitchDirection.X > 0.f ? WarriorGamePlayTags::Player_Event_SwitchTarget_Right : WarriorGamePlayTags::Player_Event_SwitchTarget_Left,
 		Data
 		);
-
 	
 	// Debug::Print(TEXT("SwitchDirection: ") + SwitchDirection.ToString());
+}
+
+// 줍기 함수 실행
+void AWarriorHeroCharacter::Input_PickUpStonesStarted(const FInputActionValue& InputActionValue)
+{
+	FGameplayEventData Data;
+	
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+		this,
+		WarriorGamePlayTags::Player_Event_ConsumeStones,
+		Data
+		);
 }
 
 void AWarriorHeroCharacter::Input_AbilityInputPressed(FGameplayTag InInputTag)
