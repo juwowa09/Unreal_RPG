@@ -5,6 +5,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Characters/WarriorHeroCharacter.h"
 #include "Items/PickUps/WarriorStoneBase.h"
+#include "Component/UI/HeroUIComponent.h"
 
 #include "WarriorDebugHelper.h"
 
@@ -12,16 +13,20 @@ void UHeroGameplayAbility_PickUpStones::ActivateAbility(const FGameplayAbilitySp
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
 {
-	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	// 현재 어빌리티 활성화 시 UI widget 활성화
+	GetHeroUIComponentFromActorInfo()->OnStoneInteracted.Broadcast(true);
 	
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
 void UHeroGameplayAbility_PickUpStones::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	bool bReplicateEndAbility, bool bWasCancelled)
 {
-	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+	// 어빌리티 끝날때 UI widget 비활
+	GetHeroUIComponentFromActorInfo()->OnStoneInteracted.Broadcast(false);
 	
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
 // 어빌리티가 실행되어있는 동안 계속해서 호출되는 함수

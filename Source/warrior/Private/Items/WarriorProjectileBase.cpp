@@ -19,6 +19,7 @@ AWarriorProjectileBase::AWarriorProjectileBase()
 	// 대부분 루트 컴포넌트는 콜리젼
 	ProjectileCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("ProjectileCollisionBox"));
 	SetRootComponent(ProjectileCollisionBox);
+	
 	// 물리 충돌 X, Overlap, Trace 가능 == QueryOnly
 	ProjectileCollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	ProjectileCollisionBox->SetCollisionResponseToChannel(ECC_Pawn,ECR_Block);
@@ -120,6 +121,8 @@ void AWarriorProjectileBase::OnProjectileBeginOverlap(UPrimitiveComponent* Overl
 		if (UWarriorFunctionLibrary::IsTargetPawnHostile(GetInstigator(),HitPawn))
 		{
 			HandleApplyProjectileDamage(HitPawn,Data);
+			BP_OnSpawnProjectileHitFX(SweepResult.ImpactPoint);
+			Destroy();
 		}
 	}
 }

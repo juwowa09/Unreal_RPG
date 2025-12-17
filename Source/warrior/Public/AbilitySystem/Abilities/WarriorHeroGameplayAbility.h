@@ -6,6 +6,7 @@
 #include "AbilitySystem/Abilities/WarriorGameplayAbility.h"
 #include "WarriorHeroGameplayAbility.generated.h"
 
+class UHeroUIComponent;
 class AWarriorHeroCharacter;
 class AWarriorHeroController;
 class UHeroCombatComponent;
@@ -34,6 +35,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
 	FGameplayEffectSpecHandle MakeHeroDamageEffectSpecHandle(TSubclassOf<UGameplayEffect> EffectClass, float InWeaponBaseDamage, FGameplayTag InCurrentAttackTypeTag, int32 InUsedComboCount);
 
+	// Actor의 UIComponent를 받아오는 함수
+	UFUNCTION(BlueprintPure, Category = "Warrior|Ability")
+	UHeroUIComponent* GetHeroUIComponentFromActorInfo();
+	
 	// ASC 에게 현재 어빌리티의 쿨타임이 얼마나 남았는지 받아오는 함수
 	UFUNCTION(BlueprintCallable, Category = "Warrior|Ability")
 	bool GetAbilityRemainingCooldownByTag(FGameplayTag InCooldownTag, float& TotalCooldownTime, float& RemainingCooldownTime);
