@@ -86,7 +86,7 @@ private:
 	int32 TotalWavesToSpawn;
 	
 	// 현재 웨이브 카운트하는 변수
-	UPROPERTY()
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
 	int32 CurrentWaveCount = 1;
 	
 	// 경과 시간 
