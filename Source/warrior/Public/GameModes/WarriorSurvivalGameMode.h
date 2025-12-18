@@ -7,8 +7,10 @@
 #include "GameModes/WarriorBaseGameMode.h"
 #include "WarriorSurvivalGameMode.generated.h"
 
+class AWarriorEnemyCharacter;
+
 UENUM(BlueprintType)
-enum class EWarriorSuvivalGameModeState : uint8
+enum class EWarriorSurvivalGameModeState : uint8
 {
 	WaitSpawnNewWave,
 	SpanwningNewWave,
@@ -18,7 +20,36 @@ enum class EWarriorSuvivalGameModeState : uint8
 	PlayerDied
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSurvivalGameModeStateChangedDelegate, EWarriorSuvivalGameModeState, CurrentState);
+// 한 종류의 Enemy 를 몇마리 소환할지 정의하는 구조체
+USTRUCT(BlueprintType)
+struct FWarriorEnemyWaveSpawnerInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	TSoftClassPtr<AWarriorEnemyCharacter> SoftEnemyClassToSpawn;
+
+	UPROPERTY(EditAnywhere)
+	int32 MinPerSpanwCount = 1;
+
+	UPROPERTY(EditAnywhere)
+	int32 MaxPerSpawnCount = 3;
+};
+
+// 하나의 웨이브에 얼마나 많은 적을 생성할지 정의하는 구조체
+USTRUCT(BlueprintType)
+struct FWarriorEnemyWaveSpawnerTableRow : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	TArray<FWarriorEnemyWaveSpawnerInfo> EnemyWaveSpawnerDefinitions;
+
+	UPROPERTY(EditAnywhere)
+	int32 TotalEnemyToSpawnThisWave = 1;
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSurvivalGameModeStateChangedDelegate, EWarriorSurvivalGameModeState, CurrentState);
 
 /**
  * 
@@ -34,12 +65,43 @@ protected:
 
 private:
 	// 현재 게임모드 상태를 변경하는 Setter 함수
-	void SetCurrentSurvivalGameModeState(EWarriorSuvivalGameModeState InState);
+	void SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState InState);
+
+	//
+	bool HasFinishedAllWaves() const;
 	
 	UPROPERTY()
-	EWarriorSuvivalGameModeState CurrentSurvivalGameModeState;
+	EWarriorSurvivalGameModeState CurrentSurvivalGameModeState;
 
 	// 현재 Game Mode 가 변경되었음을 알려주는 델리게이트
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnSurvivalGameModeStateChangedDelegate OnSurvivalGameModeStateChanged;
+	
+	// Data Table 을 통해 GameMode 정하
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
+	UDataTable* EnemyWaveSpawnerDataTable;
+
+	// wave 에서 생성할 enemy 수
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
+	int32 TotalWavesToSpawn;
+	
+	// 현재 웨이브 카운트하는 변수
+	UPROPERTY()
+	int32 CurrentWaveCount = 1;
+	
+	// 경과 시간 
+	UPROPERTY()
+	float TimePassedSinceStart = 0.f;
+	
+	// Wait 시작 전 대기 시간
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
+	float SpawnNewWaveWaitTime = 5.f;
+
+	// 스폰 대기 시간
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
+	float SpawnEnemiesDelayTime = 2.f;
+
+	// Wave 끝난 후 대기시간
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
+	float WaveCompletedWaitTime = 5.f;
 };

@@ -10,7 +10,7 @@ void AWarriorStoneBase::Consume(UWarriorAbilitySystemComponent* AbilitySystemCom
 {
 	check(StoneGameplayEffectClass);
 
-	// 클래스 Effect 를 로드해오기
+	// 클래스 Effect CDO 를 로드해오기
 	UGameplayEffect* EffectCDO = StoneGameplayEffectClass->GetDefaultObject<UGameplayEffect>();
 
 	// ASC 에게 적용하기
