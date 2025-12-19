@@ -30,7 +30,7 @@ struct FWarriorEnemyWaveSpawnerInfo
 	TSoftClassPtr<AWarriorEnemyCharacter> SoftEnemyClassToSpawn;
 
 	UPROPERTY(EditAnywhere)
-	int32 MinPerSpanwCount = 1;
+	int32 MinPerSpawnCount = 1;
 
 	UPROPERTY(EditAnywhere)
 	int32 MaxPerSpawnCount = 3;
@@ -67,8 +67,20 @@ private:
 	// 현재 게임모드 상태를 변경하는 Setter 함수
 	void SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState InState);
 
-	//
+	// 모든 Wave가 끝남을 확인하는 함수
 	bool HasFinishedAllWaves() const;
+
+	// 다음 웨이브의 적들은 비동기로드로 미리 로드해오기
+	void PreLoadNextWaveEnemies();
+
+	// 현재 Wave 의 DataTable Row 를 가져오는 함수
+	FWarriorEnemyWaveSpawnerTableRow* GetCurrentWaveSpawnerTableRow() const;
+
+	// Enemy 스폰 시도하는 함수
+	int32 TrySpawnWaveEnemies();
+
+	// Spawn 계속 시도해야하는지 (스폰 개수 숫자 관리) 판단
+	bool ShouldKeepSpawnEnemies() const;
 	
 	UPROPERTY()
 	EWarriorSurvivalGameModeState CurrentSurvivalGameModeState;
@@ -88,6 +100,15 @@ private:
 	// 현재 웨이브 카운트하는 변수
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
 	int32 CurrentWaveCount = 1;
+
+	// 현재 총 spawn 한 enemy 수
+	UPROPERTY()
+	int32 CurrentSpawnedEnemiesCounter = 0;
+	// 현재 wave 에서 스폰한 enemy 수
+	UPROPERTY()
+	int32 TotalSpawnedEnemiesThisWaveCounter = 0;
+	// TargetPoint 를 저장할 배열
+	TArray<AActor*> TargetPointsArray;
 	
 	// 경과 시간 
 	UPROPERTY()
@@ -104,4 +125,8 @@ private:
 	// Wave 끝난 후 대기시간
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
 	float WaveCompletedWaitTime = 5.f;
+
+	// SoftPtr 과 UClass 를 매핑시킴
+	UPROPERTY()
+	TMap<TSoftClassPtr<AWarriorEnemyCharacter>, UClass*> PreLoadedEnemyClassMap;
 };
