@@ -96,7 +96,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
 	UDataTable* EnemyWaveSpawnerDataTable;
 
-	// wave 에서 생성할 enemy 수
+	// 전체 Wave 숫자
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
 	int32 TotalWavesToSpawn;
 	
@@ -122,7 +122,7 @@ private:
 	float SpawnNewWaveWaitTime = 5.f;
 
 	// 스폰 대기 시간
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WaveDefinition", meta = (AllowPrivateAccess = "true"))
 	float SpawnEnemiesDelayTime = 2.f;
 
 	// Wave 끝난 후 대기시간
@@ -132,4 +132,8 @@ private:
 	// SoftPtr 과 UClass 를 매핑시킴
 	UPROPERTY()
 	TMap<TSoftClassPtr<AWarriorEnemyCharacter>, UClass*> PreLoadedEnemyClassMap;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	void RegisterSpawnedEnemies(const TArray<AWarriorEnemyCharacter*>& InEnemiesToRegister);
 };

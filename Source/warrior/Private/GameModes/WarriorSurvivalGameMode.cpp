@@ -44,7 +44,7 @@ void AWarriorSurvivalGameMode::Tick(float DeltaTime)
 		}
 	}
 
-	// 헌재 Wave Spawn 중 상태
+	// 현재 Wave Spawn 중 상태
 	if (CurrentSurvivalGameModeState == EWarriorSurvivalGameModeState::SpanwningNewWave)
 	{
 		TimePassedSinceStart += DeltaTime;
@@ -223,6 +223,8 @@ void AWarriorSurvivalGameMode::OnEnemyDestroyed(AActor* DestroyedActor)
 	// 실시간 스폰 된 적 숫자 카운팅
 	CurrentSpawnedEnemiesCounter--;
 
+	Debug::Print(FString::Printf(TEXT("CurrentSpawnedEnemiesCounter: %i, Total Spawned This Wave: %i"),CurrentSpawnedEnemiesCounter,TotalSpawnedEnemiesThisWaveCounter));
+
 	// 스폰된 숫자가 max 를 넘어가지 않았다면 다시 스폰
 	if (ShouldKeepSpawnEnemies())
 	{
@@ -244,4 +246,18 @@ void AWarriorSurvivalGameMode::SetCurrentSurvivalGameModeState(EWarriorSurvivalG
 
 	// 등록한 컴포넌트들에게 현재 게임모드 상태가 변경됨을 알림
 	OnSurvivalGameModeStateChanged.Broadcast(CurrentSurvivalGameModeState);
+}
+
+void AWarriorSurvivalGameMode::RegisterSpawnedEnemies(const TArray<AWarriorEnemyCharacter*>& InEnemiesToRegister)
+{
+	// 보스로부터 소환된 Enemy GameMode에 등록하는 함수 
+	for (AWarriorEnemyCharacter* SpawnedEnemy : InEnemiesToRegister)
+	{
+		if (SpawnedEnemy)
+		{
+			CurrentSpawnedEnemiesCounter++;
+
+			SpawnedEnemy->OnDestroyed.AddUniqueDynamic(this, &ThisClass::OnEnemyDestroyed);
+		}
+	}
 }
