@@ -81,6 +81,9 @@ private:
 
 	// Spawn 계속 시도해야하는지 (스폰 개수 숫자 관리) 판단
 	bool ShouldKeepSpawnEnemies() const;
+
+	UFUNCTION()
+	void OnEnemyDestroyed( AActor* DestroyedActor );
 	
 	UPROPERTY()
 	EWarriorSurvivalGameModeState CurrentSurvivalGameModeState;

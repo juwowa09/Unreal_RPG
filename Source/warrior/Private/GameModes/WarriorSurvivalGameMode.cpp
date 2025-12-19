@@ -29,7 +29,7 @@ void AWarriorSurvivalGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Wave Spawn 대기상태
+	// 현재 Wave Spawn 대기상태
 	if (CurrentSurvivalGameModeState == EWarriorSurvivalGameModeState::WaitSpawnNewWave)
 	{
 		TimePassedSinceStart += DeltaTime;
@@ -44,7 +44,7 @@ void AWarriorSurvivalGameMode::Tick(float DeltaTime)
 		}
 	}
 
-	// Wave Spawn 중 상태
+	// 헌재 Wave Spawn 중 상태
 	if (CurrentSurvivalGameModeState == EWarriorSurvivalGameModeState::SpanwningNewWave)
 	{
 		TimePassedSinceStart += DeltaTime;
@@ -62,7 +62,7 @@ void AWarriorSurvivalGameMode::Tick(float DeltaTime)
 		}
 	}
 
-	// Wave 가 완료되었을 경우
+	// 현재 Wave 가 완료되었을 경우
 	if (CurrentSurvivalGameModeState == EWarriorSurvivalGameModeState::WaveCompleted)
 	{
 		TimePassedSinceStart += DeltaTime;
@@ -71,7 +71,7 @@ void AWarriorSurvivalGameMode::Tick(float DeltaTime)
 		if (TimePassedSinceStart >= WaveCompletedWaitTime)
 		{
 			TimePassedSinceStart = 0.f;
-
+			// 웨이브 카운트 증가
 			CurrentWaveCount++;
 
 			if (HasFinishedAllWaves())
@@ -101,6 +101,9 @@ void AWarriorSurvivalGameMode::PreLoadNextWaveEnemies()
 	// 모든 wave가 끝나버림
 	if (HasFinishedAllWaves()) return;
 
+	// 전 Wave 클래스 비우기
+	PreLoadedEnemyClassMap.Empty();
+
 	// 데이터 Row 에서 모든 Enemy Info 를 하나씩 가져오기
 	for (const FWarriorEnemyWaveSpawnerInfo& SpawnerInfo : GetCurrentWaveSpawnerTableRow()->EnemyWaveSpawnerDefinitions)
 	{
@@ -120,7 +123,6 @@ void AWarriorSurvivalGameMode::PreLoadNextWaveEnemies()
 					{
 						// Soft 참조와 실제로 로드된 클래스를 매핑
 						PreLoadedEnemyClassMap.Emplace(SpawnerInfo.SoftEnemyClassToSpawn, LoadedEnemyClass);
-						Debug::Print(LoadedEnemyClass->GetName()+TEXT(" is Loaded"));
 					}
 				}
 				)
@@ -193,6 +195,9 @@ int32 AWarriorSurvivalGameMode::TrySpawnWaveEnemies()
 			
 			if (SpawnedEnemy)
 			{
+				// Enemy Destroyed 델리게이트에 함수 등록
+				SpawnedEnemy->OnDestroyed.AddUniqueDynamic(this,&ThisClass::OnEnemyDestroyed);
+
 				EnemiesSpawnedThisTime++;
 				TotalSpawnedEnemiesThisWaveCounter++;
 			}
@@ -211,6 +216,25 @@ bool AWarriorSurvivalGameMode::ShouldKeepSpawnEnemies() const
 {
 	// 현재 Wave 에서 Spawn 된 개수가 Table 의 최대값보다 크면 안됨
 	return TotalSpawnedEnemiesThisWaveCounter < GetCurrentWaveSpawnerTableRow()->TotalEnemyToSpawnThisWave;
+}
+
+void AWarriorSurvivalGameMode::OnEnemyDestroyed(AActor* DestroyedActor)
+{
+	// 실시간 스폰 된 적 숫자 카운팅
+	CurrentSpawnedEnemiesCounter--;
+
+	// 스폰된 숫자가 max 를 넘어가지 않았다면 다시 스폰
+	if (ShouldKeepSpawnEnemies())
+	{
+		CurrentSpawnedEnemiesCounter += TrySpawnWaveEnemies();
+	}
+	else if (CurrentSpawnedEnemiesCounter == 0)	// max 넘어갔는데 다죽음 -> 다음 웨이브 실행
+	{
+		// 다죽었으면 초기화상태로 돌리기 , 다음 Wave 실행
+		TotalSpawnedEnemiesThisWaveCounter = 0;
+		CurrentSpawnedEnemiesCounter = 0;
+		SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState::WaveCompleted);
+	}
 }
 
 void AWarriorSurvivalGameMode::SetCurrentSurvivalGameModeState(EWarriorSurvivalGameModeState InState)
