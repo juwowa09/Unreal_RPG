@@ -132,20 +132,19 @@ void AWarriorEnemyCharacter::InitEnemyStartUpData()
 	// GameMode 의 난이도를 통해 Ability Level 을 할당하는 로직
 	if (AWarriorBaseGameMode* BaseGameMode = GetWorld()->GetAuthGameMode<AWarriorBaseGameMode>())
 	{
-						
 		switch(BaseGameMode->GetCurrentGameDifficulty())
 		{
 		case EWarriorGameDifficulty::Easy:
-			AbilityApplyLevel = 4;
+			AbilityApplyLevel = 1;
 			break;
 		case EWarriorGameDifficulty::Normal:
-			AbilityApplyLevel = 3;
-			break;
-		case EWarriorGameDifficulty::Hard:
 			AbilityApplyLevel = 2;
 			break;
+		case EWarriorGameDifficulty::Hard:
+			AbilityApplyLevel = 3;
+			break;
 		case EWarriorGameDifficulty::VeryHard:
-			AbilityApplyLevel = 1;
+			AbilityApplyLevel = 4;
 		default:
 			break;
 		}

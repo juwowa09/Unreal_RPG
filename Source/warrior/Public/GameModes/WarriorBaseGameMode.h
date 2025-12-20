@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AsyncTreeDifferences.h"
+#include "WarriorDebugHelper.h"
 #include "GameFramework/GameModeBase.h"
 #include "WarriorTypes/WarriorEnumTypes.h"
 
@@ -24,6 +26,6 @@ protected:
 	EWarriorGameDifficulty CurrentGameDifficulty;
 
 public:
-	FORCEINLINE EWarriorGameDifficulty GetCurrentGameDifficulty() const {return CurrentGameDifficulty; }
+	FORCEINLINE EWarriorGameDifficulty GetCurrentGameDifficulty() const {return CurrentGameDifficulty;}
 	
 };

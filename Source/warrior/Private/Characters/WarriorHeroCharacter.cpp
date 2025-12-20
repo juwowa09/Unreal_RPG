@@ -174,7 +174,7 @@ void AWarriorHeroCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	Debug::Print(TEXT("Working"));
+	// Debug::Print(TEXT("Working"));
 }
 
 void AWarriorHeroCharacter::Input_Move(const FInputActionValue& InputActionValue)

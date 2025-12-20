@@ -223,7 +223,7 @@ void AWarriorSurvivalGameMode::OnEnemyDestroyed(AActor* DestroyedActor)
 	// 실시간 스폰 된 적 숫자 카운팅
 	CurrentSpawnedEnemiesCounter--;
 
-	Debug::Print(FString::Printf(TEXT("CurrentSpawnedEnemiesCounter: %i, Total Spawned This Wave: %i"),CurrentSpawnedEnemiesCounter,TotalSpawnedEnemiesThisWaveCounter));
+	// Debug::Print(FString::Printf(TEXT("CurrentSpawnedEnemiesCounter: %i, Total Spawned This Wave: %i"),CurrentSpawnedEnemiesCounter,TotalSpawnedEnemiesThisWaveCounter));
 
 	// 스폰된 숫자가 max 를 넘어가지 않았다면 다시 스폰
 	if (ShouldKeepSpawnEnemies())
