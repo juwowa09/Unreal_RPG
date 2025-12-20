@@ -77,6 +77,7 @@ private:
 	void Input_SwitchTargetTriggered(const FInputActionValue& InputActionValue);
 	void Input_SwitchTargetCompleted(const FInputActionValue& InputActionValue);
 
+	// Stone 줍는 인풋
 	void Input_PickUpStonesStarted(const FInputActionValue& InputActionValue);
 
 	// 인풋에 대해서

@@ -16,6 +16,7 @@
 #include "Component/Combat/HeroCombatComponent.h"
 #include "Component/UI/HeroUIComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "GameModes/WarriorBaseGameMode.h"
 
 #include "WarriorDebugHelper.h"
 
@@ -82,7 +83,31 @@ void AWarriorHeroCharacter::PossessedBy(AController* NewController)
 		UDataAsset_StartUpDataBase* LoadedData = CharacterStartUpData.LoadSynchronous();
 		if (LoadedData)
 		{
-			LoadedData->GiveToAbilitySystemComponent(WarriorAbilitySystemComponent);
+			int32 AbilityApplyLevel = 1;
+
+			// GameMode 의 난이도를 통해 Ability Level 을 할당하는 로직
+			if (AWarriorBaseGameMode* BaseGameMode = GetWorld()->GetAuthGameMode<AWarriorBaseGameMode>())
+			{
+				switch(BaseGameMode->GetCurrentGameDifficulty())
+				{
+				case EWarriorGameDifficulty::Easy:
+					AbilityApplyLevel = 4;
+					break;
+				case EWarriorGameDifficulty::Normal:
+					AbilityApplyLevel = 3;
+					break;
+				case EWarriorGameDifficulty::Hard:
+					AbilityApplyLevel = 2;
+					break;
+				case EWarriorGameDifficulty::VeryHard:
+					AbilityApplyLevel = 1;
+				default:
+					break;
+				}
+			}
+
+			// 로드한 Ability 를 Ability Level 에 맞춰 ASC 에 모두 전달
+			LoadedData->GiveToAbilitySystemComponent(WarriorAbilitySystemComponent, AbilityApplyLevel);
 		}
 	}
 }

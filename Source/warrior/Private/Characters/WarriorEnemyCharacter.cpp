@@ -10,9 +10,10 @@
 #include "Components/WidgetComponent.h"
 #include "Widgets/WarriorWidgetBase.h"
 #include "Components/BoxComponent.h"
+#include "WarriorFunctionLibrary.h"
+#include "GameModes/WarriorBaseGameMode.h"
 
 #include "WarriorDebugHelper.h"
-#include "WarriorFunctionLibrary.h"
 
 AWarriorEnemyCharacter::AWarriorEnemyCharacter()
 {
@@ -126,19 +127,41 @@ void AWarriorEnemyCharacter::OnBodyCollisionBoxBeginOverlap(UPrimitiveComponent*
 void AWarriorEnemyCharacter::InitEnemyStartUpData()
 {
 	if (CharacterStartUpData.IsNull()) return;
+	int32 AbilityApplyLevel = 1;
 
+	// GameMode 의 난이도를 통해 Ability Level 을 할당하는 로직
+	if (AWarriorBaseGameMode* BaseGameMode = GetWorld()->GetAuthGameMode<AWarriorBaseGameMode>())
+	{
+						
+		switch(BaseGameMode->GetCurrentGameDifficulty())
+		{
+		case EWarriorGameDifficulty::Easy:
+			AbilityApplyLevel = 4;
+			break;
+		case EWarriorGameDifficulty::Normal:
+			AbilityApplyLevel = 3;
+			break;
+		case EWarriorGameDifficulty::Hard:
+			AbilityApplyLevel = 2;
+			break;
+		case EWarriorGameDifficulty::VeryHard:
+			AbilityApplyLevel = 1;
+		default:
+			break;
+		}
+	}
+	
 	// 비동기 요청
 	UAssetManager::GetStreamableManager().RequestAsyncLoad(
 		CharacterStartUpData.ToSoftObjectPath(),
 		// 람다함수 -> 저장안하고 사용시 일회용, [](람다캡쳐)는 외부 변수를 어떻게 사용할 것인지 정의하는 부분
 		FStreamableDelegate::CreateLambda(
-			[this]()
+			[this, AbilityApplyLevel]()
 			{
 				if (UDataAsset_StartUpDataBase* LoadedData = CharacterStartUpData.Get())
 				{
-					LoadedData->GiveToAbilitySystemComponent(WarriorAbilitySystemComponent);
-
-					// Debug::Print(TEXT("Enemy Start Up Data Loaded"),FColor::Green);
+					// Load 한 Ability 를 GameMode의 난이도에 따라 Level 을 적용하도록 ASC 에 전달 
+					LoadedData->GiveToAbilitySystemComponent(WarriorAbilitySystemComponent, AbilityApplyLevel);
 				}
 			}
 		)
