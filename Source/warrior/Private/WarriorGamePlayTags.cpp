@@ -105,4 +105,7 @@ namespace WarriorGamePlayTags
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Status_Invincible, "Shared.Status.Invincible");
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Status_UnInterrupt, "Shared.Status.UnInterrupt");
 	
+	/** Game Data Tags **/
+	UE_DEFINE_GAMEPLAY_TAG(GameData_Level_SurvivalGameModeMap, "GameData.Level.SurvivalGameModeMap");
+	UE_DEFINE_GAMEPLAY_TAG(GameData_Level_MainMenuMap, "GameData.Level.MainMenuMap");
 }
