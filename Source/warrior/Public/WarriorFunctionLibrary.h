@@ -5,9 +5,11 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "WarriorTypes/WarriorEnumTypes.h"
+
 #include "WarriorFunctionLibrary.generated.h"
 
 
+class UWarriorGameInstance;
 struct FGameplayTag;
 class UWarriorAbilitySystemComponent;
 class UPawnCombatComponent;
@@ -67,4 +69,8 @@ public:
 	static void CountDown(const UObject* WorldContextObject, float TotalTime, float UpdateInterval,
 		float& OutRemainingTime,EWarriorCountDownActionInput CountDownInput,
 		UPARAM(DisplayName="Output")EWarriorCountDownActionOutput& CountDownOutput, FLatentActionInfo LatentInfo);
+	
+	// GameInstance 를 받아오는 함수
+	UFUNCTION(BlueprintPure, Category="Warrior|FunctionLibrary", meta=(WorldContext = "WorldContextObject"))
+	static UWarriorGameInstance* GetWarriorGameInstance(const UObject* WorldContextObject);
 };
