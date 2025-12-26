@@ -25,7 +25,8 @@ void UHeroGameplayAbility_TargetLock::ActivateAbility(const FGameplayAbilitySpec
 {
 	// 어빌리티 활성시 Target
 	TryLockOnTarget();
-	
+
+	PlayerRotation = GetHeroCharacterFromActorInfo()->GetActorRotation();
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
@@ -84,14 +85,13 @@ void UHeroGameplayAbility_TargetLock::OnTargetLockTick(float DeltaTime)
 // Tick Task 를 통해 계속해서 Widget 업데이트, 카메라 고정 하는 함수
 void UHeroGameplayAbility_TargetLock::OnTargetLockTickNoCurrent(float DeltaTime)
 {
-	FRotator LookAtRot = GetHeroCharacterFromActorInfo()->GetActorRotation();
 	const FRotator CurrentControlRot = GetHeroControllerFromActorInfo()->GetControlRotation();
-	if (LookAtRot.Equals(CurrentControlRot,10.f))
+	if (PlayerRotation.Equals(CurrentControlRot,1.f))
 	{
 		CancelTargetLockAbility();
 		return;
 	}
-	const FRotator TargetRot = FMath::RInterpTo(CurrentControlRot,LookAtRot,DeltaTime, TargetLockRotationInterpSpeed);
+	const FRotator TargetRot = FMath::RInterpTo(CurrentControlRot,PlayerRotation, DeltaTime, TargetLockRotationInterpSpeed);
 	GetHeroControllerFromActorInfo()->SetControlRotation(TargetRot);
 }
 
@@ -105,6 +105,7 @@ void UHeroGameplayAbility_TargetLock::SwitchTarget(const FGameplayTag& InSwitchD
 	
 	GetAvailableActorsAroundTarget(ActorsOnLeft,ActorsOnRight);
 
+	// 가장 가까운 적 설정하기
 	if (InSwitchDirectionTag == WarriorGamePlayTags::Player_Event_SwitchTarget_Left)
 	{
 		NewTargetToLock = GetNearestTargetFromAvailableActors(ActorsOnLeft);
@@ -205,20 +206,25 @@ AActor* UHeroGameplayAbility_TargetLock::GetNearestTargetFromAvailableActors(con
 void UHeroGameplayAbility_TargetLock::GetAvailableActorsAroundTarget(TArray<AActor*>& OutActorsOnLeft,
 	TArray<AActor*>& OutActorsOnRight)
 {
+	// 받아올 녀석이 업으면 캔슬
 	if (!CurrentLockedActor || AvailableActorsToLock.IsEmpty())
 	{
 		CancelTargetLockAbility();
 		return;
 	}
+
+	// 플레이어의 위치 / 플레이어 -> 타겟 벡터 받아오기
 	const FVector PlayerLocation = GetHeroCharacterFromActorInfo()->GetActorLocation();
 	const FVector PlayerToCurrentNormalized = (CurrentLockedActor->GetActorLocation() - PlayerLocation).GetSafeNormal();
 
+	// 가능한 타겟들
 	for (AActor* AvailableActor : AvailableActorsToLock)
 	{
+		// 현재 타겟이거나 타겟이 없으면 넘어가기
 		if (!AvailableActor || AvailableActor == CurrentLockedActor) continue;
 
 		const FVector PlayerToAvailableNormalized = (AvailableActor->GetActorLocation() - PlayerLocation).GetSafeNormal();
-
+		// 외적을 통해서 대상타겟이 현재 지정된 타겟의 왼쪽인지 오른쪽인지 판단 
 		const FVector CrossResult = FVector::CrossProduct(PlayerToCurrentNormalized, PlayerToAvailableNormalized);
 
 		if (CrossResult.Z > 0.f)
@@ -350,10 +356,10 @@ void UHeroGameplayAbility_TargetLock::ResetTargetLockMappingContext()
 	{
 		return;
 	}
-	// PlayerController → LocalPlayer 로 연결 (인풋이 들어오는 곳이 LocalPlayer)
+	// PlayerController → LocalPlayer 로 연결 (인풋이 들어오는 곳이 LocalPlayer) 
 	const ULocalPlayer* LocalPlayer = GetHeroControllerFromActorInfo()->GetLocalPlayer();
 
-	// 인풋 감진 서브시스템
+	// 인풋 감지 서브시스템
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer);
 
 	check(Subsystem)

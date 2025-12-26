@@ -34,6 +34,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	AActor* CurrentLockedActor;
 
+	FRotator PlayerRotation;
+
 private:
 	// Lock 실행하는 함수
 	void TryLockOnTarget();

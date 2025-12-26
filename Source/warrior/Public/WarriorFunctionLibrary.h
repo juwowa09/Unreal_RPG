@@ -73,4 +73,8 @@ public:
 	// GameInstance 를 받아오는 함수
 	UFUNCTION(BlueprintPure, Category="Warrior|FunctionLibrary", meta=(WorldContext = "WorldContextObject"))
 	static UWarriorGameInstance* GetWarriorGameInstance(const UObject* WorldContextObject);
+
+	// Player Controller 의 입력 처리를 담당하는 함수
+	UFUNCTION(BlueprintCallable, Category="Warrior|FunctionLibrary", meta=(WorldContext = "WorldContextObject"))
+	static void ToggleInputMode(const UObject* WorldContextObject, EWarriorInputMode InInputMode);
 };

@@ -222,3 +222,44 @@ UWarriorGameInstance* UWarriorFunctionLibrary::GetWarriorGameInstance(const UObj
 	return nullptr;
 }
 
+void UWarriorFunctionLibrary::ToggleInputMode(const UObject* WorldContextObject, EWarriorInputMode InInputMode)
+{
+	APlayerController* PlayerController = nullptr;
+
+	if (GEngine)
+	{
+		// 월드 받아와서 컨트롤러 할당하기
+		if (UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject,EGetWorldErrorMode::LogAndReturnNull))
+		{
+			PlayerController = World->GetFirstPlayerController();
+		}
+	}
+
+	if (!PlayerController)
+	{
+		return;
+	}
+
+	// Input Game Mode 정의
+	FInputModeGameOnly GameOnlyMode;
+	FInputModeUIOnly UIOnlyMode;
+
+	// Input 에 따라서 GameMode 를 변경하기
+	switch (InInputMode)
+	{
+		// GameMode 로 설정, 마우스 커서 안보이게
+	case EWarriorInputMode::GameOnly:
+		PlayerController->SetInputMode(GameOnlyMode);
+		PlayerController->bShowMouseCursor = false;
+		break;
+		
+		// UIMode 로 설정, 마우스 커서 보이게
+	case EWarriorInputMode::UIOnly:
+		PlayerController->SetInputMode(UIOnlyMode);
+		PlayerController->bShowMouseCursor = true;
+		break;
+	default:
+		break;
+	}
+}
+
