@@ -240,7 +240,7 @@ void UWarriorFunctionLibrary::ToggleInputMode(const UObject* WorldContextObject,
 		return;
 	}
 
-	// Input Game Mode 정의
+	// Input Game Mode 객체 정의 (Controller 에 전달용)
 	FInputModeGameOnly GameOnlyMode;
 	FInputModeUIOnly UIOnlyMode;
 
