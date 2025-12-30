@@ -62,6 +62,7 @@ class WARRIOR_API AWarriorSurvivalGameMode : public AWarriorBaseGameMode
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 
 private:
 	// 현재 게임모드 상태를 변경하는 Setter 함수
