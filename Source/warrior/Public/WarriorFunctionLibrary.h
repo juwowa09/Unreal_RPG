@@ -77,4 +77,12 @@ public:
 	// Player Controller 의 입력 처리를 담당하는 함수
 	UFUNCTION(BlueprintCallable, Category="Warrior|FunctionLibrary", meta=(WorldContext = "WorldContextObject"))
 	static void ToggleInputMode(const UObject* WorldContextObject, EWarriorInputMode InInputMode);
+
+	// 난이도를 파일에 저장하는 함수
+	UFUNCTION(BlueprintCallable, Category="Warrior|FunctionLibrary")
+	static void SaveCurrentGameDifficulty(EWarriorGameDifficulty InDifficultyToSave);
+
+	// 파일에 저장되어있는 난이도를 불러오는 함
+	UFUNCTION(BlueprintCallable, Category="Warrior|FunctionLibrary")
+	static bool TryLoadSavedGameDifficulty(EWarriorGameDifficulty& OutSavedDifficulty);
 };
