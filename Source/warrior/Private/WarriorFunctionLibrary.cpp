@@ -279,7 +279,7 @@ void UWarriorFunctionLibrary::SaveCurrentGameDifficulty(EWarriorGameDifficulty I
 		// 실제로 태그를 통해 슬롯1 이라는 파일에 저장하기
 		const bool bWasSaved = UGameplayStatics::SaveGameToSlot(WarriorSaveGameObject, WarriorGamePlayTags::GameData_SaveGame_Slot_1.GetTag().ToString(), 0);
 
-		Debug::Print(bWasSaved ? TEXT("Difficulty Saved") : TEXT("Difficulty NOT Saved"));
+		// Debug::Print(bWasSaved ? TEXT("Difficulty Saved") : TEXT("Difficulty NOT Saved"));
 	}
 }
 
@@ -297,7 +297,7 @@ bool UWarriorFunctionLibrary::TryLoadSavedGameDifficulty(EWarriorGameDifficulty&
 			// 난이도 불러오기
 			OutSavedDifficulty = WarriorSaveGame->SavedCurrentGameDifficulty;
 
-			Debug::Print(TEXT("Loading Successful"),FColor::Green);
+			// Debug::Print(TEXT("Loading Successful"),FColor::Green);
 			return true;
 		}
 	}
