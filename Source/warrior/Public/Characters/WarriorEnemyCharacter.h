@@ -51,11 +51,13 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat")
 	UBoxComponent* LeftHandCollisionBox;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Combat")
 	FName LeftHandCollisionBoxAttackBoneName;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat")
 	UBoxComponent* RightHandCollisionBox;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Combat")
 	FName RightHandCollisionBoxAttackBoneName;
 	

@@ -14,7 +14,7 @@ void UHeroGameplayAbility_PickUpStones::ActivateAbility(const FGameplayAbilitySp
 	const FGameplayEventData* TriggerEventData)
 {
 	// 현재 어빌리티 활성화 시 UI widget 활성화
-	GetHeroUIComponentFromActorInfo()->OnStoneInteracted.Broadcast(true);
+	// GetHeroUIComponentFromActorInfo()->OnStoneInteracted.Broadcast(true);
 	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
@@ -24,7 +24,7 @@ void UHeroGameplayAbility_PickUpStones::EndAbility(const FGameplayAbilitySpecHan
 	bool bReplicateEndAbility, bool bWasCancelled)
 {
 	// 어빌리티 끝날때 UI widget 비활
-	GetHeroUIComponentFromActorInfo()->OnStoneInteracted.Broadcast(false);
+	// GetHeroUIComponentFromActorInfo()->OnStoneInteracted.Broadcast(false);
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
@@ -44,20 +44,18 @@ void UHeroGameplayAbility_PickUpStones::CollectStones()
 		(-GetHeroCharacterFromActorInfo()->GetActorUpVector()).ToOrientationRotator(),
 		StoneTraceChannel,	// 특정 채널 안에서 Trace
 		false,
-		TArray<AActor*>(), // 무시할 Actor 목록 들 현재 무시하는게 없음
+		TArray<AActor*>(), // 무시할 Actor 목록 현재 무시하는게 없음
 		bDrawDebugShape ? EDrawDebugTrace::ForOneFrame : EDrawDebugTrace::None,
 		TraceHits,
 		true
 		);
-		//bignoreSelf (마지막 매개변수) 가 true 이면, 액터자신은 Trace 에 포함되지 않음
+		//ignoreSelf (마지막 매개변수) 가 true 이면, 액터자신은 Trace 에 포함되지 않음
 
 	for (const FHitResult& TraceHit : TraceHits)
 	{
 		// 캐스트로 Stone 타입만 받아올 수 있게 함
 		if (AWarriorStoneBase* FoundStone = Cast<AWarriorStoneBase>(TraceHit.GetActor()))
-		{
 			CollectedStones.AddUnique(FoundStone);
-		}
 	}
 
 	// Stones 이 없으면 사라짐

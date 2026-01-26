@@ -137,7 +137,7 @@ FGameplayTag UWarriorFunctionLibrary::ComputeHitReactDirectionTag(AActor* InAtta
 	else
 		return WarriorGamePlayTags::Shared_Status_HitReact_Back;
 
-	return FGameplayTag();
+	// return FGameplayTag();
 }
 
 bool UWarriorFunctionLibrary::IsValidBlock(AActor* InAttacker, AActor* InDefender)

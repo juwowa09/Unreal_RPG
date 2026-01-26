@@ -22,7 +22,7 @@ public:
 	
 protected:
 	virtual void OnPickUpCollisionSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
-
+	virtual void OnPickUpCollisionSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
 	// BP 에서 구현할 함수
 	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName = "On Stone Consumed"))
 	void BP_OnStoneConsumed();

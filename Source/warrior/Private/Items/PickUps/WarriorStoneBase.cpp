@@ -5,6 +5,9 @@
 #include "Characters/WarriorHeroCharacter.h"
 #include "AbilitySystem/WarriorAbilitySystemComponent.h"
 #include "WarriorGamePlayTags.h"
+#include "GameplayTagContainer.h"
+#include "WarriorDebugHelper.h"
+#include "Components/WidgetComponent.h"
 
 void AWarriorStoneBase::Consume(UWarriorAbilitySystemComponent* AbilitySystemComponent, int32 ApplyLevel)
 {
@@ -31,6 +34,21 @@ void AWarriorStoneBase::OnPickUpCollisionSphereBeginOverlap(UPrimitiveComponent*
 	// 오버랩 되는 경우 Hero Character 인 경우에 바로 PickUp Ability 활성화
 	if (AWarriorHeroCharacter* OverlappedHeroCharacter = Cast<AWarriorHeroCharacter>(OtherActor))
 	{
+		Debug::Print(TEXT("Overlap Start"));
 		OverlappedHeroCharacter->GetWarriorAbilitySystemComponent()->TryActivateAbilityByTag(WarriorGamePlayTags::Player_Ability_PickUp_Stones);
+		PickUpWidget->SetVisibility(true);
+	}
+}
+
+void AWarriorStoneBase::OnPickUpCollisionSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+		Debug::Print(TEXT("Overlap End"));
+	// 오버랩 비활성 되는 경우 Hero Character 인 경우에 바로 PickUp Ability 활성화
+	if (AWarriorHeroCharacter* OverlappedHeroCharacter = Cast<AWarriorHeroCharacter>(OtherActor))
+	{
+		FGameplayTagContainer TargetTags(WarriorGamePlayTags::Player_Ability_PickUp_Stones);
+		OverlappedHeroCharacter->GetWarriorAbilitySystemComponent()->CancelAbilities(&TargetTags);
+		PickUpWidget->SetVisibility(false);
 	}
 }

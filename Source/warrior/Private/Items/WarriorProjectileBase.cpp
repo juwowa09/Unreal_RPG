@@ -37,7 +37,7 @@ AWarriorProjectileBase::AWarriorProjectileBase()
 	// 초기화
 	ProjectileMovementComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComp"));
 	ProjectileMovementComp->InitialSpeed = 700.f;
-	ProjectileMovementComp->MaxSpeed == 900.f;
+	ProjectileMovementComp->MaxSpeed = 900.f;
 	ProjectileMovementComp->Velocity = FVector(1.f,0.f,0.f);
 	ProjectileMovementComp->ProjectileGravityScale = 0.f;
 
