@@ -24,7 +24,7 @@ protected:
 	USphereComponent* PickUpCollisionSphere;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pick UP Interaction")
-	UWidgetComponent* PickUpWidget;
+	UWidgetComponent* PickUpWidgetComponent;
 
 	UFUNCTION()
 	virtual void OnPickUpCollisionSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

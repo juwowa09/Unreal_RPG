@@ -27,8 +27,12 @@ protected:
 	
 	UFUNCTION(BlueprintImplementableEvent,meta = (DisplayName = "On Owning Enemy UI Component Initialized"))
 	void BP_OnOwningEnemyUIComponentInitialized(UEnemyUIComponent* OwningEnemyUIComponent);
+	
 
 public:
+	UFUNCTION(BlueprintImplementableEvent,meta = (DisplayName = "Input Key Setting"))
+	void BP_OnSetInputKey(APlayerController* InPawnController);
+	
 	UFUNCTION(BlueprintCallable)
 	void InitEnemyCreatedWidget(AActor* OwningEnemyActor);
 };

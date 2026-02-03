@@ -8,6 +8,7 @@
 #include "GameplayTagContainer.h"
 #include "WarriorDebugHelper.h"
 #include "Components/WidgetComponent.h"
+#include "Widgets/WarriorWidgetBase.h"
 
 void AWarriorStoneBase::Consume(UWarriorAbilitySystemComponent* AbilitySystemComponent, int32 ApplyLevel)
 {
@@ -36,19 +37,35 @@ void AWarriorStoneBase::OnPickUpCollisionSphereBeginOverlap(UPrimitiveComponent*
 	{
 		Debug::Print(TEXT("Overlap Start"));
 		OverlappedHeroCharacter->GetWarriorAbilitySystemComponent()->TryActivateAbilityByTag(WarriorGamePlayTags::Player_Ability_PickUp_Stones);
-		PickUpWidget->SetVisibility(true);
+		if ( !PickUpWidgetComponent )
+		{
+			Debug::Print(TEXT("No PickUpWidgetComponent"));
+			return;
+		}
+		PickUpWidgetComponent->SetVisibility(true);
+		Debug::Print(TEXT("No PickUpWidgetComponent"));
+		if ( UWarriorWidgetBase* InputWidget = Cast<UWarriorWidgetBase>(PickUpWidgetComponent->GetUserWidgetObject()) )
+		{
+			if (APlayerController* PC = Cast<APlayerController>(OverlappedHeroCharacter->GetController()))
+				InputWidget->BP_OnSetInputKey(PC);
+		}
 	}
 }
 
 void AWarriorStoneBase::OnPickUpCollisionSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-		Debug::Print(TEXT("Overlap End"));
 	// 오버랩 비활성 되는 경우 Hero Character 인 경우에 바로 PickUp Ability 활성화
 	if (AWarriorHeroCharacter* OverlappedHeroCharacter = Cast<AWarriorHeroCharacter>(OtherActor))
 	{
+		Debug::Print(TEXT("Overlap End"));
 		FGameplayTagContainer TargetTags(WarriorGamePlayTags::Player_Ability_PickUp_Stones);
 		OverlappedHeroCharacter->GetWarriorAbilitySystemComponent()->CancelAbilities(&TargetTags);
-		PickUpWidget->SetVisibility(false);
+		if ( !PickUpWidgetComponent )
+		{
+			Debug::Print(TEXT("No PickUpWidgetComponent"));
+			return;
+		}
+		PickUpWidgetComponent->SetVisibility(false);
 	}
 }

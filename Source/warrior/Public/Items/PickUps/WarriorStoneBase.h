@@ -8,6 +8,7 @@
 
 class UGameplayEffect;
 class UWarriorAbilitySystemComponent;
+class UInputAction;
 /**
  * 
  */
@@ -30,4 +31,7 @@ protected:
 	// ASC 에 적용할 Effect Class
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> StoneGameplayEffectClass;
+	
+private:
+	UInputAction* StoneInputAction;
 };

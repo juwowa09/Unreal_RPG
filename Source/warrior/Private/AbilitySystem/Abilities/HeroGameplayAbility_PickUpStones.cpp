@@ -14,7 +14,7 @@ void UHeroGameplayAbility_PickUpStones::ActivateAbility(const FGameplayAbilitySp
 	const FGameplayEventData* TriggerEventData)
 {
 	// 현재 어빌리티 활성화 시 UI widget 활성화
-	// GetHeroUIComponentFromActorInfo()->OnStoneInteracted.Broadcast(true);
+	GetHeroUIComponentFromActorInfo()->OnStoneInteracted.Broadcast(true);
 	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
